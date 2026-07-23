@@ -1,0 +1,2194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>JP/Ali Prospecting Collab</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap');
+
+:root{
+  --bg:#0B141C;
+  --surface:#121D28;
+  --surface2:#182633;
+  --border:#25343F;
+  --text:#E7EDF3;
+  --muted:#8CA0B0;
+  --accent:#2FD8C4;
+  --accent-dim:#1B8A7C;
+  --warm:#F2A65A;
+  --danger:#E1685C;
+  --tier1:#2FD8C4;
+  --tier2:#5AA9F2;
+  --tier3:#B79CF2;
+  --tier4:#8CA0B0;
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background:var(--bg);
+  color:var(--text);
+  font-family:'Inter',sans-serif;
+  min-height:100vh;
+}
+.mono{font-family:'IBM Plex Mono',monospace;}
+.display{font-family:'Space Grotesk',sans-serif;}
+
+/* ---------- Shell ---------- */
+.shell{max-width:1280px;margin:0 auto;padding:28px 24px 80px;}
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:24px;flex-wrap:wrap;gap:16px;
+}
+.brand{display:flex;align-items:center;gap:14px;}
+.brand-mark{
+  width:38px;height:38px;border-radius:10px;
+  background:linear-gradient(135deg,var(--accent),var(--accent-dim));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Space Grotesk',sans-serif;font-weight:700;color:#04211D;font-size:15px;
+}
+.brand h1{font-family:'Space Grotesk',sans-serif;font-size:20px;font-weight:600;margin:0;letter-spacing:0.2px;}
+.brand p{margin:0;color:var(--muted);font-size:12.5px;}
+
+.tabs{display:flex;gap:6px;background:var(--surface);padding:5px;border-radius:12px;border:1px solid var(--border);}
+.tab{
+  padding:9px 18px;border-radius:8px;font-size:13.5px;font-weight:500;
+  color:var(--muted);cursor:pointer;user-select:none;transition:.15s;
+}
+.tab.active{background:var(--accent);color:#04211D;font-weight:600;}
+.tab:hover:not(.active){color:var(--text);}
+
+.view{display:none;}
+.view.active{display:block;animation:fade .25s ease;}
+@keyframes fade{from{opacity:0;transform:translateY(4px);}to{opacity:1;transform:translateY(0);}}
+
+/* ---------- Cards / grid ---------- */
+.grid{display:grid;gap:16px;}
+.grid.stats{grid-template-columns:repeat(auto-fit,minmax(150px,1fr));margin-bottom:20px;}
+.card{
+  background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:18px;
+}
+.stat-card{position:relative;overflow:hidden;}
+.stat-card .num{font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;margin:6px 0 2px;}
+.stat-card .lbl{font-size:12px;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;}
+.stat-card input{
+  font-family:'Space Grotesk',sans-serif;font-size:30px;font-weight:700;background:none;border:none;color:var(--text);
+  width:100%;padding:0;margin:6px 0 2px;
+}
+.stat-card input:focus{outline:none;color:var(--accent);}
+
+.section-title{
+  font-family:'Space Grotesk',sans-serif;font-size:15px;font-weight:600;margin:28px 0 12px;
+  display:flex;align-items:center;justify-content:space-between;
+}
+.section-title span.hint{font-family:'Inter';font-weight:400;font-size:12px;color:var(--muted);}
+
+textarea, input, select{
+  font-family:'Inter',sans-serif;background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);border-radius:8px;padding:9px 11px;font-size:13.5px;
+}
+textarea:focus,input:focus,select:focus{outline:none;border-color:var(--accent);}
+textarea{width:100%;resize:vertical;min-height:70px;}
+
+button{
+  font-family:'Inter',sans-serif;font-weight:600;font-size:13px;padding:9px 15px;border-radius:8px;
+  border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;transition:.15s;
+}
+button:hover{border-color:var(--accent);color:var(--accent);}
+button.primary{background:var(--accent);color:#04211D;border-color:var(--accent);}
+button.primary:hover{opacity:.9;color:#04211D;}
+button.ghost{background:none;border:none;color:var(--muted);padding:4px 8px;}
+button.ghost:hover{color:var(--danger);}
+
+.week-nav{display:flex;align-items:center;gap:12px;background:var(--surface);border:1px solid var(--border);
+  border-radius:12px;padding:10px 16px;margin-bottom:20px;}
+.week-nav .wk{font-family:'Space Grotesk';font-weight:600;font-size:15px;flex:1;}
+.week-nav .wk span{color:var(--muted);font-weight:400;font-size:12.5px;display:block;font-family:'Inter';}
+
+.log-list{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px;}
+.log-item{
+  background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:11px 13px;
+  display:flex;align-items:flex-start;gap:10px;font-size:13.5px;
+}
+.log-item .tag{
+  font-size:10.5px;font-weight:600;padding:3px 8px;border-radius:999px;text-transform:uppercase;letter-spacing:.4px;
+  flex-shrink:0;margin-top:1px;
+}
+.tag.call{background:#20313A;color:var(--tier2);}
+.tag.email{background:#20313A;color:var(--tier1);}
+.tag.linkedin{background:#20313A;color:var(--tier3);}
+.tag.meeting{background:#2E2419;color:var(--warm);}
+.tag.note{background:#2A2020;color:var(--muted);}
+.tag.deal{background:#1F2A20;color:var(--tier1);}
+.note-list{display:flex;flex-direction:column;gap:8px;margin-top:12px;}
+.note-item{
+  display:flex;align-items:flex-start;gap:8px;background:var(--surface2);border:1px solid var(--border);
+  border-radius:10px;padding:10px 12px;font-size:13.5px;cursor:grab;
+}
+.note-item.dragging{opacity:.4;}
+.note-item .drag-handle{color:var(--muted);cursor:grab;font-size:13px;line-height:1.4;padding-top:1px;user-select:none;}
+.note-item .note-text{flex:1;outline:none;line-height:1.4;word-break:break-word;}
+.note-item .note-text[contenteditable="true"]{background:var(--surface);border-radius:6px;padding:4px 6px;margin:-4px -6px;}
+.note-item .del-note{flex-shrink:0;}
+.log-item .body{flex:1;}
+.log-item .meta{color:var(--muted);font-size:11.5px;margin-top:2px;}
+.log-item .del{margin-left:auto;}
+
+.add-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px;}
+.add-row input,.add-row select{flex:1;min-width:120px;}
+.add-row button{flex-shrink:0;}
+
+.empty{
+  text-align:center;color:var(--muted);padding:30px 10px;font-size:13.5px;border:1px dashed var(--border);border-radius:12px;
+}
+
+/* ---------- Accounts ---------- */
+.acct-toolbar{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:18px;align-items:center;}
+.acct-toolbar input[type=text]{flex:1;min-width:200px;}
+.tier-group{margin-bottom:26px;}
+.tier-head{display:flex;align-items:center;gap:10px;margin-bottom:10px;}
+.tier-dot{width:9px;height:9px;border-radius:50%;}
+.tier-head h3{font-family:'Space Grotesk';font-size:14.5px;font-weight:600;margin:0;}
+.tier-head .count{color:var(--muted);font-size:12.5px;}
+.acct-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(230px,1fr));gap:12px;}
+.acct-card{
+  background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:14px;cursor:pointer;
+  transition:.15s;position:relative;
+}
+.acct-card:hover{border-color:var(--accent);transform:translateY(-1px);}
+.dnc-card{border-color:var(--danger);}
+.dnc-card:hover{border-color:var(--danger);}
+.dnc-banner{
+  background:var(--danger);color:#2A0D0A;font-size:10.5px;font-weight:700;letter-spacing:.5px;
+  text-align:center;padding:4px 0;border-radius:6px;margin-bottom:10px;
+}
+.top25-card{border-color:var(--warm);}
+.top25-card:hover{border-color:var(--warm);}
+.top25-banner{
+  background:var(--warm);color:#2E1F0A;font-size:10.5px;font-weight:700;letter-spacing:.5px;
+  text-align:center;padding:4px 0;border-radius:6px;margin-bottom:10px;
+}
+.acct-card .row1{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;}
+.acct-card h4{margin:0;font-size:14px;font-weight:600;font-family:'Space Grotesk';line-height:1.3;}
+.acct-card .domain{color:var(--muted);font-size:11.5px;margin-top:2px;}
+.acct-card .meta-row{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
+.acct-card .cloud-badge{font-size:10.5px;color:var(--muted);background:var(--surface2);padding:3px 8px;border-radius:6px;}
+.acct-card .spend{font-family:'IBM Plex Mono';font-size:12px;color:var(--text);}
+.ring{width:34px;height:34px;flex-shrink:0;}
+
+/* ---------- Modal / detail ---------- */
+.overlay{
+  position:fixed;inset:0;background:rgba(4,10,15,.62);backdrop-filter:blur(2px);
+  display:none;align-items:flex-start;justify-content:flex-end;z-index:50;
+}
+.overlay.active{display:flex;}
+.panel{
+  width:min(560px,100%);height:100vh;background:var(--bg);border-left:1px solid var(--border);
+  overflow-y:auto;padding:26px;animation:slidein .25s ease;
+}
+@keyframes slidein{from{transform:translateX(24px);opacity:0;}to{transform:translateX(0);opacity:1;}}
+.panel-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px;}
+.panel-head h2{font-family:'Space Grotesk';font-size:21px;margin:0 0 4px;}
+.panel-head .domain{color:var(--muted);font-size:13px;}
+.close-x{background:none;border:none;color:var(--muted);font-size:20px;cursor:pointer;line-height:1;padding:4px;}
+.close-x:hover{color:var(--text);}
+
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:18px 0;}
+.field{display:flex;flex-direction:column;gap:5px;}
+.field label{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;}
+
+.chip-row{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;}
+.chip{
+  background:var(--surface2);border:1px solid var(--border);border-radius:999px;padding:5px 11px;font-size:12.5px;
+  display:flex;align-items:center;gap:6px;
+}
+.chip button{background:none;border:none;padding:0;color:var(--muted);font-size:13px;}
+.chip button:hover{color:var(--danger);}
+
+.stat-card.clickable{cursor:pointer;transition:.15s;}
+.stat-card.clickable:hover{border-color:var(--accent);}
+.stat-card .lbl .hint{display:block;font-size:10px;color:var(--muted);text-transform:none;letter-spacing:0;margin-top:2px;opacity:.7;}
+.rel-note{color:var(--muted);font-size:12.5px;margin-top:4px;line-height:1.4;}
+.detail-row{display:flex;justify-content:space-between;align-items:center;padding:9px 0;border-bottom:1px solid var(--border);font-size:13px;}
+.detail-row:last-child{border-bottom:none;}
+.detail-row .who{font-weight:500;}
+.detail-row .acct{color:var(--muted);font-size:12px;}
+.detail-row .outcome{font-size:11px;padding:2px 8px;border-radius:999px;background:var(--surface2);color:var(--muted);}
+.acct-link{cursor:pointer;transition:.15s;}
+.acct-link:hover{border-color:var(--accent);}
+.detail-row.acct-link:hover .who{color:var(--accent);}
+.panel-save-row{
+  position:sticky;bottom:0;margin-top:24px;padding:16px 0 4px;
+  background:linear-gradient(to top, var(--bg) 60%, transparent);
+  display:flex;align-items:center;gap:12px;
+}
+.save-btn{padding:11px 26px;font-size:14px;}
+.save-status{font-size:12.5px;color:var(--accent);opacity:0;transition:opacity .2s;}
+.save-status.show{opacity:1;}
+.backup-controls{display:flex;gap:8px;align-items:center;}
+.restore-label{
+  font-family:'Inter',sans-serif;font-weight:600;font-size:13px;padding:9px 15px;border-radius:8px;
+  border:1px solid var(--border);background:var(--surface2);color:var(--text);cursor:pointer;position:relative;
+}
+.restore-label:hover{border-color:var(--accent);color:var(--accent);}
+.restore-label input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;}
+
+/* ---------- Outreach ---------- */
+.bar-row{display:flex;align-items:center;gap:12px;margin-bottom:9px;}
+.bar-row .name{width:190px;flex-shrink:0;font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+.bar-track{flex:1;height:20px;background:var(--surface2);border-radius:5px;overflow:hidden;display:flex;}
+.bar-seg{height:100%;}
+.bar-row .total{width:34px;text-align:right;font-family:'IBM Plex Mono';font-size:12.5px;color:var(--muted);flex-shrink:0;}
+.legend{display:flex;gap:16px;margin:14px 0 4px;font-size:12px;color:var(--muted);}
+.legend .sw{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:5px;}
+
+::-webkit-scrollbar{width:8px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:8px;}
+
+@media(max-width:640px){
+  .field-grid{grid-template-columns:1fr;}
+  .tabs{width:100%;overflow-x:auto;}
+}
+</style>
+</head>
+<body>
+
+<!-- ================= SETUP OVERLAY (Google Sheet connection) ================= -->
+<div class="overlay" id="setupOverlay" style="align-items:center;justify-content:center;">
+  <div style="width:min(560px,92vw);background:var(--bg);border:1px solid var(--border);border-radius:16px;padding:32px;max-height:88vh;overflow-y:auto;position:relative;">
+    <button id="setupCloseBtn" class="close-x" style="position:absolute;top:16px;right:16px;">&times;</button>
+    <h2 style="font-family:'Space Grotesk';margin:0 0 6px;font-size:20px;">Connect your data store</h2>
+    <p style="color:var(--muted);font-size:13.5px;line-height:1.6;margin:0 0 18px;">
+      This console saves everything to a Google Sheet you control, so it works whether you open it in Claude, download it, or send it to Ali. This is a one time setup per browser.
+    </p>
+    <div style="background:var(--surface);border:1px solid var(--border);border-radius:10px;padding:16px;margin-bottom:18px;font-size:13px;line-height:1.7;">
+      <b>First time only:</b>
+      <ol style="margin:8px 0 0;padding-left:20px;">
+        <li>Open the data sheet: <a href="https://docs.google.com/spreadsheets/d/1oHYDJ8YqLASP8Qz-pjsB0ED22oM1V0NjiM3UqfX3TDA/edit" target="_blank" style="color:var(--accent);">JP-Ali Prospecting Collab - Data Store ↗</a></li>
+        <li>Extensions → Apps Script</li>
+        <li>Delete any placeholder code, paste in the script provided</li>
+        <li>Deploy → New deployment → type <b>Web app</b> → Execute as <b>Me</b> → Who has access <b>Anyone</b> → Deploy</li>
+        <li>Authorize when prompted, then copy the Web app URL</li>
+        <li>Paste that URL below</li>
+      </ol>
+    </div>
+    <input type="text" id="setupUrlInput" placeholder="Paste your Apps Script Web app URL here" style="width:100%;margin-bottom:12px;">
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button id="setupConnectBtn" class="primary" style="flex-shrink:0;">Connect</button>
+      <span id="setupStatus" style="font-size:12.5px;color:var(--muted);"></span>
+    </div>
+    <p style="color:var(--muted);font-size:11.5px;margin-top:16px;">Already have the URL from a teammate? Just paste it in, no need to redo the sheet setup.</p>
+  </div>
+</div>
+
+<div class="shell">
+  <div class="topbar">
+    <div class="brand">
+      <div class="brand-mark">PO</div>
+      <div>
+        <h1>JP/Ali Prospecting Collab</h1>
+        <p>JP Williams &amp; Ali Bharwani · shared, live edits</p>
+      </div>
+    </div>
+    <div class="tabs">
+      <div class="tab active" data-view="pulse">Weekly Pulse</div>
+      <div class="tab" data-view="accounts">Accounts</div>
+      <div class="tab" data-view="relationships">Previous Contact</div>
+      <div class="tab" data-view="outreach">Outreach Map</div>
+    </div>
+    <div class="backup-controls">
+      <button id="backupBtn" title="Download everything in this console as a JSON file">Backup</button>
+      <label class="restore-label" title="Load a previously downloaded backup file">
+        Restore
+        <input type="file" id="restoreInput" accept="application/json">
+      </label>
+      <button id="reconnectBtn" title="Change or re-enter the data store connection">Data Store</button>
+    </div>
+  </div>
+
+  <!-- ================= WEEKLY PULSE ================= -->
+  <div class="view active" id="view-pulse">
+    <div class="week-nav">
+      <button id="wkPrev">&larr;</button>
+      <div class="wk" id="wkLabel">Week of —<span id="wkSub"></span></div>
+      <button id="wkNext">&rarr;</button>
+      <button id="wkToday">This week</button>
+    </div>
+
+    <div style="color:var(--muted);font-size:12px;margin:-10px 0 16px;" id="syncLine">Calls, emails, LinkedIn messages, opens, replies, meetings, and contacts connected are pulled from HubSpot. Last synced: never yet, ask Claude to refresh.</div>
+
+    <div class="grid stats">
+      <div class="card stat-card clickable" id="cardCalls"><div class="lbl">Calls made <span class="hint">click for detail</span></div><div class="num" id="statCalls">0</div></div>
+      <div class="card stat-card clickable" id="cardEmails"><div class="lbl">Emails sent <span class="hint">click for detail</span></div><div class="num" id="statEmails">0</div></div>
+      <div class="card stat-card"><div class="lbl">LinkedIn messages</div><div class="num" id="statLinkedin">0</div></div>
+      <div class="card stat-card"><div class="lbl">Meetings set</div><div class="num" id="statMeetings">0</div></div>
+      <div class="card stat-card"><div class="lbl">Email / LI opens</div><div class="num" id="statOpens">0</div></div>
+      <div class="card stat-card"><div class="lbl">Replies</div><div class="num" id="statReplies">0</div></div>
+    </div>
+
+    <div class="section-title">JP's target accounts this week <span class="hint">what he is pushing on</span></div>
+    <div class="card">
+      <div id="targetChipsJP" class="chip-row"></div>
+      <div class="add-row">
+        <input type="text" id="targetSearchJP" list="acctDatalist" placeholder="Search accounts to add…" autocomplete="off">
+        <select id="targetPickerJP"><option value="">Or pick from the list…</option></select>
+        <button id="addTargetJP">Add</button>
+      </div>
+    </div>
+
+    <div class="section-title">Ali's target accounts this week <span class="hint">what he is pushing on</span></div>
+    <div class="card">
+      <div id="targetChipsAli" class="chip-row"></div>
+      <div class="add-row">
+        <input type="text" id="targetSearchAli" list="acctDatalist" placeholder="Search accounts to add…" autocomplete="off">
+        <select id="targetPickerAli"><option value="">Or pick from the list…</option></select>
+        <button id="addTargetAli">Add</button>
+      </div>
+    </div>
+    <datalist id="acctDatalist"></datalist>
+
+    <div class="section-title">Meetings set this week <span class="hint">from HubSpot</span></div>
+    <div class="card"><ul class="log-list" id="meetingList"></ul></div>
+
+    <div class="section-title">Contacts we connected with on calls this week <span class="hint">from HubSpot</span></div>
+    <div class="card"><ul class="log-list" id="contactsConnectedList"></ul></div>
+
+    <div class="section-title">Week notes <span class="hint">shared, autosaves</span></div>
+    <div class="card"><textarea id="weekNotes" placeholder="Anything worth flagging for each other this week..."></textarea></div>
+  </div>
+
+  <!-- ================= ACCOUNTS ================= -->
+  <div class="view" id="view-accounts">
+    <div class="acct-toolbar">
+      <input type="text" id="acctSearch" placeholder="Search accounts or domains...">
+      <select id="cloudFilter">
+        <option value="">All clouds</option>
+        <option>AWS</option>
+        <option>Azure</option>
+        <option>Google Cloud</option>
+        <option>Oracle Cloud</option>
+        <option value="Multi-cloud">Multi-cloud</option>
+        <option>Unknown</option>
+      </select>
+      <select id="groupFilter">
+        <option value="">All groups</option>
+        <option value="1">Group 1</option>
+        <option value="2">Group 2</option>
+        <option value="3">Group 3</option>
+        <option value="4">Group 4</option>
+        <option value="5">Group 5</option>
+        <option value="6">Group 6</option>
+        <option value="Do Not Contact">Do Not Contact</option>
+      </select>
+      <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:var(--muted);cursor:pointer;white-space:nowrap;">
+        <input type="checkbox" id="top25Filter" style="width:15px;height:15px;accent-color:var(--warm);">
+        Top 25 only
+      </label>
+      <select id="acctSort">
+        <option value="name">Sort: name (A-Z)</option>
+        <option value="recent">Sort: most recent outreach</option>
+        <option value="oldest">Sort: oldest outreach</option>
+        <option value="spendHigh">Sort: cloud spend (high to low)</option>
+        <option value="spendLow">Sort: cloud spend (low to high)</option>
+        <option value="pe">Sort: PE firm (A-Z)</option>
+      </select>
+    </div>
+    <div id="tierGroups"></div>
+  </div>
+
+  <!-- ================= RELATIONSHIPS ================= -->
+  <div class="view" id="view-relationships">
+    <div class="section-title">Previous Contact <span class="hint">everyone we've actually connected with or met, click a name for their account</span></div>
+    <div class="card">
+      <ul class="log-list" id="relList"></ul>
+      <div class="add-row">
+        <input type="text" id="relName" placeholder="Contact name">
+        <select id="relAcct"></select>
+        <select id="relType"><option value="call">Call</option><option value="meeting">Meeting</option></select>
+        <input type="text" id="relWhen" placeholder="Date">
+        <input type="text" id="relNote" placeholder="Notes (also added to account history)">
+        <button id="addRel" class="primary">Add</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= OUTREACH ================= -->
+  <div class="view" id="view-outreach">
+    <div class="section-title">Account outreach distribution <span class="hint">last 60 days, calls + emails + LinkedIn</span></div>
+    <div class="card">
+      <div class="legend">
+        <span><span class="sw" style="background:var(--tier2)"></span>Calls</span>
+        <span><span class="sw" style="background:var(--tier1)"></span>Emails</span>
+        <span><span class="sw" style="background:var(--tier3)"></span>LinkedIn</span>
+      </div>
+      <div id="outreachBars"></div>
+    </div>
+    <div style="color:var(--muted);font-size:12px;margin-top:10px;">This chart is currently seeded from a partial sample of JP's own logged calls, not the full book. A real book-wide pull (both reps, all touch types) turned out to be roughly 1,000+ touches in 60 days, mostly Ali's dialer activity, and needs a proper aggregation pass rather than a chat pull. Ask Claude to build out the full 60 day rollup when you want it.</div>
+  </div>
+</div>
+
+<!-- ================= ACCOUNT DETAIL PANEL ================= -->
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <div class="panel-head">
+      <div>
+        <h2 id="pName">—</h2>
+        <div class="domain" id="pDomain">—</div>
+        <a id="pHubspotLink" href="#" target="_blank" rel="noopener" style="display:none;color:var(--accent);font-size:12px;text-decoration:none;">Open in HubSpot ↗</a>
+      </div>
+      <button class="close-x" id="pClose">&times;</button>
+    </div>
+    <div id="pDncWarning" style="display:none;background:var(--danger);color:#2A0D0A;font-weight:700;font-size:12.5px;letter-spacing:.4px;text-align:center;padding:8px 0;border-radius:8px;margin:4px 0 16px;">DO NOT CONTACT</div>
+    <div id="pTop25Badge" style="display:none;background:var(--warm);color:#2E1F0A;font-weight:700;font-size:12.5px;letter-spacing:.4px;text-align:center;padding:8px 0;border-radius:8px;margin:4px 0 16px;">TOP 25</div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label>Tier</label>
+        <select id="pTier">
+          <option value="1">Tier 1</option>
+          <option value="2">Tier 2</option>
+          <option value="3">Tier 3</option>
+          <option value="4">Tier 4</option>
+          <option value="0">Unrated</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Group</label>
+        <select id="pGroup">
+          <option value="">Unassigned</option>
+          <option value="1">Group 1</option>
+          <option value="2">Group 2</option>
+          <option value="3">Group 3</option>
+          <option value="4">Group 4</option>
+          <option value="5">Group 5</option>
+          <option value="6">Group 6</option>
+          <option value="Do Not Contact">Do Not Contact</option>
+        </select>
+      </div>
+      <div class="field">
+        <label>Top 25</label>
+        <label style="display:flex;align-items:center;gap:8px;padding-top:9px;font-size:13.5px;cursor:pointer;">
+          <input type="checkbox" id="pTop25Check" style="width:16px;height:16px;accent-color:var(--warm);">
+          Mark as Top 25
+        </label>
+      </div>
+      <div class="field">
+        <label>PE firm</label>
+        <input type="text" id="pPeFirm" placeholder="e.g. Vista, Thoma Bravo...">
+      </div>
+      <div class="field">
+        <label>Cloud provider(s)</label>
+        <input type="text" id="pCloud" placeholder="e.g. AWS, Azure">
+      </div>
+      <div class="field">
+        <label>Estimated monthly cloud spend ($, modeled)</label>
+        <input type="number" id="pSpend" placeholder="0">
+      </div>
+      <div class="field">
+        <label>Outreach, last 60 days</label>
+        <div class="mono" id="pOutreachCount" style="padding-top:8px;font-size:14px;">0 touches</div>
+      </div>
+    </div>
+    <div style="color:var(--muted);font-size:11.5px;margin:-10px 0 6px;">Spend is a revenue based model, not a confirmed bill. See the chat for how it is calculated.</div>
+
+    <div class="section-title">Relevant notes</div>
+    <div class="card">
+      <div class="add-row">
+        <input type="text" id="pRelevantNotesInput" placeholder="Type a note, click Add when you're done...">
+        <button id="addRelevantNote" class="primary">Add</button>
+      </div>
+      <div class="note-list" id="pRelevantNotesList"></div>
+    </div>
+
+    <div class="section-title">Hypothesis <span class="hint">why this account, why now</span></div>
+    <div class="card">
+      <div class="add-row">
+        <input type="text" id="pHypothesisInput" placeholder="Type a thought, click Add when you're done...">
+        <button id="addHypothesisNote" class="primary">Add</button>
+      </div>
+      <div class="note-list" id="pHypothesisList"></div>
+    </div>
+
+    <div class="section-title">Cold outreach angles / ideas</div>
+    <div class="card">
+      <div class="add-row">
+        <input type="text" id="pAnglesInput" placeholder="Type an angle, click Add when you're done...">
+        <button id="addAnglesNote" class="primary">Add</button>
+      </div>
+      <div class="note-list" id="pAnglesList"></div>
+    </div>
+
+    <div class="section-title" style="margin-top:6px;">Decision makers <span class="hint">synced from HubSpot, editable</span></div>
+    <div class="chip-row" id="pContacts"></div>
+    <div class="add-row">
+      <input type="text" id="pContactName" placeholder="Name">
+      <input type="text" id="pContactRole" placeholder="Role / title">
+      <button id="pAddContact">Add</button>
+    </div>
+
+    <div class="section-title">Account history <span class="hint">calls, emails, and meetings sync from HubSpot</span></div>
+    <ul class="log-list" id="pHistory"></ul>
+    <div class="add-row">
+      <input type="text" id="pHistText" placeholder="Add a note for the two of you...">
+      <button id="pAddHistory" class="primary">Add note</button>
+    </div>
+
+    <div class="panel-save-row">
+      <button id="pSaveBtn" class="primary save-btn">Save</button>
+      <span id="pSaveStatus" class="save-status"></span>
+    </div>
+  </div>
+</div>
+
+<!-- ================= DRILL DOWN PANEL ================= -->
+<div class="overlay" id="detailOverlay">
+  <div class="panel">
+    <div class="panel-head">
+      <div><h2 id="dTitle">—</h2><div class="domain" id="dSub">—</div></div>
+      <button class="close-x" id="dClose">&times;</button>
+    </div>
+    <div id="dBody"></div>
+  </div>
+</div>
+
+<script>
+/* ================= SEED DATA (pulled from HubSpot, owner 85782544) ================= */
+// [name, domain, tier(1-4, 0=unrated), cloud, estMonthlySpend]
+const SEED = [
+["SGS & Co","sgsco.com",4,"",0],["Daxtra Technologies Ltd","daxtra.com",4,"AWS",0],
+["NorthMark Strategies","northmarkstrategies.com",2,"",0],["MeridianLink","meridianlink.com",2,"",0],
+["Carrix","carrix.com",2,"AWS",0],["Calamu","calamu.com",2,"",105000],
+["DataHub","acryldata.io",1,"",105000],["Deno","deno.com",1,"",105000],
+["Accuray","accuray.com",3,"",0],["Life.Church","life.church",3,"Google Cloud",0],
+["FinThrive","finthrive.com",2,"Azure",0],["VerticalScope Holdings","verticalscope.com",4,"",0],
+["OpenSignal","opensignal.com",2,"",0],["Highnote","highnote.com",1,"",210000],
+["Empower AI","empower.ai",1,"",6150000],["Verve","verve.com",1,"Google Cloud",0],
+["TRM Labs","trmlabs.com",1,"Google Cloud",18900],["Arize","arize.com",3,"",525000],
+["VDX.tv","exponential.com",2,"",278850],["Upwind Security","upwind.io",1,"",840000],
+["Cyderes","cyderes.com",1,"",2625000],["Questrade","questrade.com",4,"",10500000],
+["Pinecone","pinecone.io",1,"",437500],["TTX Company","ttx.com",1,"",0],
+["EverQuote","everquote.com",4,"",0],["OneNeck IT Solutions","oneneck.com",1,"",2187500],
+["Data Intensity","dataintensity.com",3,"",0],["Muvi.com","muvi.com",4,"",423205],
+["Wolfram Alpha","wolframalpha.com",4,"",172851],["Tandems","tandems.ai",1,"",61250],
+["11:11 Systems","1111systems.com",3,"",173622],["Sensor Tower","sensortower.com",2,"AWS",384113],
+["Wibmo","wibmo.co",2,"",1549613],["Workhuman","workhuman.com",3,"",9843750],
+["Personetics","personetics.com",1,"",787500],["MarketAxess Holdings","marketaxess.com",2,"AWS",0],
+["Droit","droit.tech",1,"",315000],["HawkEye 360","he360.com",1,"",262500],
+["Dana Farber Cancer Institute","dana-farber.org",1,"",0],["Commure","commure.com",2,"Unknown",320094],
+["Weee!","sayweee.com",4,"",560000],["Dapper Labs","dapperlabs.com",3,"Google Cloud",470228],
+["Honor","joinhonor.com",4,"",0],["Generate Biomedicines","generatebiomedicines.com",3,"",0],
+["OpenSea","opensea.io",2,"",493900],["Jasper","jasper.ai",1,"Google Cloud",787500],
+["RapidAI","rapidai.com",3,"",317250],["Nuro","nuro.ai",1,"",5250000],
+["BetaNXT","betanxt.com",1,"AWS",236250],["Yellow.ai","yellow.ai",1,"",1008297],
+["NexTech Systems","nextech.com",2,"Azure",1175000],["PathAI","pathai.com",1,"",881250],
+["Crusoe","crusoe.ai",1,"",10479000],["Quizlet","quizlet.com",1,"",931803],
+["Centific","centific.com",3,"",31689347],["Goodway Group","goodwaygroup.com",4,"",0],
+["FLYR","flyr.com",3,"",656250],["TetraScience","tetrascience.com",1,"",315000],
+["SAI360","sai360.com",1,"",787500],["CalAmp","calamp.com",1,"AWS",2822707],
+["Affinitiv","affinitiv.com",4,"",1152340],["Iyuno","iyuno.com",3,"",0],
+["Hazelcast","hazelcast.com",1,"",315000],["Apiture","apiture.com",2,"",387284],
+["NetraDyne","netradyne.com",1,"",612500],["Chemical Abstracts Service","cas.org",3,"",0],
+["Advent Health","adventhealth.com",3,"",17507500],["Pro Vigil","pro-vigil.com",4,"Google Cloud",9570],
+["DigiCert","digicert.com",1,"Oracle Cloud",2450228],["AppOmni Data","appomni.com",1,"",129500],
+["Indigo Ag","indigoag.com",1,"Google Cloud",12937500],["FarEye","getfareye.com",1,"",1837500],
+["Age of Learning","aofl.com",1,"AWS",2357040],["AskBio","askbio.com",4,"",0],
+["Stord","stord.com",1,"",0],["Fetch","fetch.com",4,"",2940000],
+["onXmaps","onxmaps.com",3,"",1050000],["LotusFlare","lotusflare.com",3,"",432127],
+["Restaurant365","restaurant365.com",3,"Unknown",1837500],["Manhattan Associates","manh.com",1,"",34483391],
+["Bumble","team.bumble.com",1,"Google Cloud",9000000],["10x Genomics","10xgenomics.com",4,"",0],
+["JD Power","jdpower.com",1,"AWS",4017510],["Wolfram Research","wolfram.com",4,"",750213],
+["Jam City","jamcity.com",1,"AWS",3500000],["Zipline","flyzipline.com",4,"",0],
+["MediaKind","mediakind.com",2,"",2351140],["Trintech","trintech.com",1,"",656250],
+["MEDecision","medecision.com",4,"",640189],["Kong","konghq.com",1,"",1534050],
+["Q2 Holding","q2.com",1,"AWS",4801416],["Human Interest","humaninterest.com",1,"",1837500],
+["Availity","availity.com",1,"AWS",2538000],["Trading Technologies","tradingtechnologies.com",2,"",1837500],
+["Command Alkon","commandalkon.com",1,"",1837500],["Barracuda Networks","barracuda.com",1,"AWS",2793825],
+["Cytel","cytel.com",1,"",7931250],["Arrive Logistics","arrivelogistics.com",4,"",0],
+["EBSCO","ebsco.com",1,"",5511847],["Anuvu","anuvu.com",1,"",5761699],
+["Upland Software","uplandsoftware.com",1,"AWS",1417500],["Computer Services (CSI)","csiweb.com",1,"",48125000],
+["Workiva","workiva.com",4,"",5500000],["Comscore","comscore.com",1,"",2746172],
+["Kraken","kraken.com",4,"",1721792],["Contentstack","contentstack.com",1,"Unknown",656250],
+["Marqeta","marqeta.com",1,"AWS",1268750],["Airtable","airtable.com",1,"",1050000],
+["LivePerson","liveperson.com",1,"Google Cloud",2364225],["Intralinks (SS&C)","intralinks.com",1,"Unknown",2464727],
+["Avetta","avetta.com",4,"",1531250],["Taboola","taboola.com",1,"Google Cloud",37612314],
+["Saylent","meridianlink.com",1,"",1338750],["PagerDuty","pagerduty.com",1,"Google Cloud, AWS",2321328],
+["Kentik","kentik.com",4,"",104880],["Included Health","includedhealth.com",3,"Unknown",1175000],
+["Bluecore","bluecore.com",1,"",656250],["Flywire","flywire.com",3,"",3468750],
+["Conversica","conversica.com",2,"",376182],["ConnectWise","connectwise.com",1,"AWS",7875000],
+["BuzzFeed","buzzfeed.com",1,"AWS",1526625],["MyHomey.ai","myhomey.ai",0,"",0]
+];
+
+function slug(name){return name.toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/(^-|-$)/g,"");}
+
+// Decision makers pulled from HubSpot contacts owned by JP (owner 85782544), matched by
+// company domain. This covers the accounts with contacts in HubSpot as of the last sync;
+// accounts not listed here either have no contacts yet or weren't in the batch pulled.
+// A refresh will fill in the rest and pick up any new contacts.
+const CONTACTS_MAP = {
+"onxmaps.com":[["Owen Samuels","Chief Technology Officer"],["Jeff Coghlin","Director, Information Technology"],["Bergen Davell","Group Product Manager, Core Services"]],
+"flyr.com":[["Ryan Stoll","Sr. FP&A Manager"]],
+"opensignal.com":[["Anthony Kroeker","VP Systems"],["Christine Li","Director of FP&A"],["Dean Jackman","Head of Infrastructure"]],
+"fetch.com":[["Brian Granetzke","Chief Architect"],["Matt Pavlik","Senior Director Enterprise IT & InfoSec"]],
+"nextech.com":[["Brian Schnieders","Senior Cloud Platform Engineer"],["Anton Butsko","Senior Cloud Platform Engineer"]],
+"q2.com":[["Leiyian Motongo","FinOps Lead"],["Joe Hajovsky","Cloud Operations Manager"],["Lalit Agarwal","Senior Director Software Engineering"]],
+"cytel.com":[["Pranav Khaladkar","Director, Cloud Operations"]],
+"iyuno.com":[["Tomasz Bińkowski","Head of Cloud Services"],["Jai Munisamy","Global VP, Information Technology"]],
+"kentik.com":[["Aaron Smith","VP Product Engineering"],["Matthew Hightower","Engineering Operations Director"],["Brian Fegan","Director, Engineering"]],
+"carrix.com":[["Jim Downing","VP, Chief Information Officer"],["Todd Spitzer","Director of IT Infrastructure"],["Merima Adee","Director of Category Management"]],
+"mediakind.com":[["Paul Burgdorf","CFO (One Equity Partners)"],["Oren Sharoni","Platform Head of Architecture"],["Kesav Kumar","Global Senior Manager, IT Operations"]],
+"kraken.com":[["Víctor Fernández","Senior Site Reliability Engineer"],["James Baxter","Manager, Platform Operations"]],
+"workiva.com":[["Kim Huffman","CIO"],["Lynn Nagel","VP Product Strategy and Operations"],["Charlene Bunting","VP Engineering"],["Nick van der Merwe","VP Engineering"]],
+"includedhealth.com":[["Annabel Liu","SVP Engineering"],["Mayank Roy","Senior Procurement Manager"]],
+"cyderes.com":[["Scott Mitchell","Director, Systems & Cloud Engineering"],["Victor Otazú","Software Engineering Manager"]],
+"lotusflare.com":[["Shao Xia","Co Founder / Head of Engineering"],["Kostiantyn Skrypnyk","Infrastructure Solution Architect"]],
+"humaninterest.com":[["Jeremy Simmons","Senior IT Systems Specialist"],["Jack Hall","Senior Software Engineer"]],
+"crusoe.ai":[["Dan Hochberg","VP Finance and Business Operations"],["David Richardson","VP Infrastructure Engineering"],["Kostas Kassaras","Director of Engineering, Global Infrastructure"]],
+"liveperson.com":[["Muhammad Saifuddin","Manager, Engineering Cloud DevOps"]],
+"konghq.com":[["Bhushan Khajurkar","Director, Engineering"],["Karen Inman","Senior Manager, Engineering Operations"]],
+"contentstack.com":[["Dean Haddock","Group Product Manager, Platform & Hosting"],["Pooja Shah","Team Lead, DevOps"]],
+"tradingtechnologies.com":[["Alex Madden","CISO"],["Elmedina Musinovic","VP Platform Services"],["Deval Haria","Senior Contract Manager"]],
+"comscore.com":[["Michael Behrens","VP Systems Engineering"],["Amit Puranik","Senior Manager, Systems Engineering"]],
+"team.bumble.com":[["Brian Healey","Principal Software Engineer"],["Ryan Gooler","Senior Security Engineer"]],
+"intralinks.com":[["Timberly Sweeney","VP Product Operations"],["Tarun Gupta","Engineering Leader, Platform & Distributed Systems"],["Oscar Suarez","Director, Platform Engineering"]],
+"restaurant365.com":[["Ryan Polk","Chief Product & Technology Officer"],["Jessica Lanier","CFO"],["Andrew Korbel","SVP Engineering & R&D Operations"]],
+"adventhealth.com":[["Herb Keller","SVP, Chief Information Officer"],["Erik Watts","VP Information Technology Infrastructure"]],
+"personetics.com":[["Yaniv Itzhaki","VP R&D"],["Sharon Atlas-BenDavid","Director of Cloud Services"]],
+"marketaxess.com":[["William Quan","Chief Technology Officer"]],
+"he360.com":[["Wendy Johnson","VP of Product"],["Brian M.","Director, Platform Engineering"]],
+"dana-farber.org":[["Shauna Beland","AVP Enterprise IT Infrastructure & Operations"],["Kevin Mann","VP Business Transformation"]],
+"sayweee.com":[["Zuming Xie","Chief Technology Officer"]],
+"dapperlabs.com":[["Harold S.","Senior Infrastructure & Site Reliability Engineer"],["Jonathan Teplitsky","AI & Automation Lead"]],
+"joinhonor.com":[["André Gold","Head of Corporate Technology, IT Security & Franchise Support"]],
+"generatebiomedicines.com":[["Vikram Sadineni","VP Technical Operations"],["Kyle Ian","Principal Enterprise Architect"]],
+"jasper.ai":[["Bryan Tsao","Chief Product Officer"],["Marc James","Director, IT and AI Enablement"]],
+"rapidai.com":[["Amit S Phadnis","Chief Innovation and Technology Officer"],["Sreenath Dindukurthi","Director of Engineering"]],
+"nuro.ai":[["Michael Mancini","Chief Financial Officer"],["Jack Guo","VP Engineering, AI Platform"]],
+"betanxt.com":[["David Olson","Head of Software Engineering"]],
+"yellow.ai":[["Jishnu Kumar","Associate Director, Platform Engineering & Operations"]],
+"pathai.com":[["Don O'Neill","Chief Technology Officer"]],
+"quizlet.com":[["Zheng Li","VP of Engineering, AI and Data"],["Reinhold Staudinger","Chief Architect"]],
+"centific.com":[["Shyam Sundar Rathinam","Director of Microsoft Delivery"],["Rajib Basu","Director, Solution Architecture"]],
+"tetrascience.com":[["Naveen Kondapalli","Chief Development Officer"],["Kai Wang","Director of Engineering"]],
+"sai360.com":[["Pat Piccolo","Senior Director, Enterprise Architecture"]],
+"calamp.com":[["Jikun Kim","Chief Financial Officer"],["Hamid R","VP, Head of Global IT (Acting CIO)"],["Ali Ghulamali","VP, Software Engineering"]],
+"affinitiv.com":[["Jason Wofford","VP of Software Engineering"],["David Spillers","VP, Infrastructure IT"]],
+"hazelcast.com":[["Edward Thurman","Senior Engineering Manager"],["Graeme Waggott","Senior Engineering Manager"]],
+"digicert.com":[["Unmesh Patil","VP Engineering"],["Kheezer Ali","Cloud FinOps Analyst"]],
+"appomni.com":[["Pedro Treccani","Senior Engineering Manager"]],
+"indigoag.com":[["Andrew McLoud","Senior Director of Engineering"],["Jacob McDonald","VP of Digital Technology"]],
+"getfareye.com":[["Shashi Kumar","Site Reliability Engineer 2"]],
+"aofl.com":[["James Iannarelli","Director of Technology Operations"]],
+"manh.com":[["Thakurdas Paul","VP, Cloud Operations and Cloud Services"]],
+"10xgenomics.com":[["Serge Saxonov","CEO & Co-Founder"],["Joseph Kovac","Senior Director, Technology Strategy"]],
+"wolfram.com":[["John Pacey","Director of Cloud Development"]],
+"jamcity.com":[["Matthew Fedynyshyn","Chief Architect"],["Troy Lee","Head of Technology"]],
+"flyzipline.com":[["Kyle Madonia","VP of Application Software and IT"],["Marcus Mueller","Head of P2 Business and US Operations"]],
+"trintech.com":[["Kai Axford","VP Global IT Operations & Security (CIO/CISO)"]],
+"medecision.com":[["Catherine W.","Senior Director of Infrastructure and Operations"],["Shaheen Merchant","Director, Cloud Architecture"]],
+"availity.com":[["Brent Backhaus","VP Software Engineering"],["Yar Savchenko","VP of Infrastructure"]],
+"commandalkon.com":[["Ranjeev Teelock","Chief Product Officer"],["Chad Eldridge","VP, Information Technology"]],
+"arrivelogistics.com":[["Kurt Bidwell","Director, IT Infrastructure & Security"]],
+"ebsco.com":[["Sobha Duvvuri","Global Director of Cloud Operations"],["Michael Michaud","Director, Agile Software Development"]],
+"anuvu.com":[["Rodrigo Navarro","VP, Global Technology Services"],["Claudio Vignali Avellan","Senior Director, Product Development"]],
+"uplandsoftware.com":[["Costas Louca","Director of Cloud Operations, EMEA"]],
+"csiweb.com":[["Kevin Latta","Senior VP, Platform Operations"],["Ted Bechtold","Senior Director, Information Technology"]],
+"airtable.com":[["Anand Iyer","Head of Global Procurement & Sourcing"]],
+"taboola.com":[["Yehuda Levi","Site Reliability Engineer, Team Lead"]],
+"pagerduty.com":[["Marlin Scott","Director, Software Engineering"]],
+"flywire.com":[["Jose Luis Salas","Director, Site Reliability Engineering"],["Cristóbal Morente","Head/Senior Manager, Cloud & Infra Security"]],
+"buzzfeed.com":[["Jonah Peretti","Chief Executive Officer"]],
+"northmarkstrategies.com":[["Christian Moore","VP, Infrastructure Operations"],["Chris Cantrell","Senior System Administrator"]],
+"pinecone.io":[["Ash Ashutosh","Chief Executive Officer"],["Jeffrey Zhu","VP, Product"]],
+"dataintensity.com":[["Chandrasekhar Velpula","Manager of Cloud Operations"]],
+"1111systems.com":[["Julien Anguenot","SVP Software Engineering"],["Haim Glickman","Senior VP, Cost Management & Data Center Operations"]],
+"cas.org":[["Rooma Hartman","Senior Director, Application Technology"],["Luke Chandler","AWS FinOps"]],
+"verticalscope.com":[["AJ Gulati","Director of Engineering"]],
+"verve.com":[["David Cullen","Engineering Director"],["Leo Snetsinger","Platform Engineering Manager"]],
+"sgsco.com":[["Brian Densford","Senior VP, Global IT Service Delivery"]],
+"upwind.io":[["David Livshits","Director of Operations, CTO Office"]],
+"wibmo.co":[["Balaji Santhanakrishnan","IT Director"]],
+"finthrive.com":[["George Mechael","SVP Engineering & Interim CTO"],["Mohan Kandasamy","Lead Architect"]],
+"life.church":[["Holly Mchargue","Director of Operations"]],
+"accuray.com":[["Kenneth Mullikin","System Administrator"]],
+"arize.com":[["Chris Hendel","Head of Engineering"]],
+"everquote.com":[["Daniel Perzan","Engineering Manager"]],
+"empower.ai":[["Aerin Zimmermann","VP, DevSecOps"]],
+"myhomey.ai":[["Cam Thomas","Tech Lead Manager, Optimization"]]
+};
+
+function seedAccounts(){
+  return SEED.map(([name,domain,tier,cloud,spend])=>{
+    const id = slug(name)+"-"+domain;
+    const contacts = (CONTACTS_MAP[domain]||[]).map(([cname,role])=>{
+      const verified = CONTACT_ID_SEED[domain+"|"+cname.toLowerCase()];
+      return {id:cryptoId(),name:cname,role:verified?verified.title:role,hubspotId:verified?verified.id:null};
+    });
+    const acct = {id,name,domain,tier,cloud,spend,contacts,history:[],hypothesis:"",angles:"",relevantNotes:"",relevantNotesItems:[],hypothesisItems:[],anglesItems:[],group:"",top25:false,peFirm:"",lastContacted:LAST_CONTACTED_SEED[domain]||null};
+    return acct;
+  });
+}
+
+// Light starter context for the four accounts already active this week, so the console
+// isn't empty on day one. Everything past this is JP and Ali's to fill in.
+function applyKnownContext(accounts){
+  const notes = {
+    "jdpower.com":"Multi service AWS deal, targeting close by July 31.",
+    "carrix.com":"Working an introduction to a PE partner to expand into a related entity.",
+    "northmarkstrategies.com":"Franco raised a no time to implement stall, working the objection.",
+    "tradingtechnologies.com":"OpenGamma contact pushed back on fee structure post contract, addressing now."
+  };
+  accounts.forEach(a=>{
+    if(notes[a.domain]){
+      a.history.push({id:cryptoId(),type:"note",text:notes[a.domain],who:"",when:new Date().toISOString()});
+    }
+  });
+  return accounts;
+}
+
+function cryptoId(){return Math.random().toString(36).slice(2,10);}
+
+// Pulled from HubSpot on 2026-07-22, this time across every account in the book
+// (not filtered by owner), so Ali's prospecting shows up too. Week of 2026-07-20 (Mon)
+// through 2026-07-24 (Fri), activity through the morning of Jul 22:
+//  - 120 calls total: 3 by JP, 117 by Ali (his Nooks power dialer). Only 4 were real
+//    connects (a person actually picked up or engaged) per HubSpot's own call outcomes;
+//    the rest were no answer, voicemail, or wrong number.
+//  - 66 email engagement records: roughly 20 from JP, 35 from Ali, the remainder is
+//    automated sequence/bounce noise (repeated subjects like "wrong person?" and
+//    "stranded coverage?" logged seconds apart) and a couple of other reps' emails on
+//    shared accounts. Meeting-object access isn't available through this connector, so
+//    meetings below come from calendar-invite emails, not a direct meeting count.
+//  - 4 meetings identified this way: 2 with Trading Technologies (Josh Casto), 2 with
+//    MyHomey.ai (Cam Thomas).
+//  - LinkedIn messages aren't exposed as a queryable engagement type in this portal via
+//    this connector, so that number stays at 0 until there's a better source for it.
+const WEEK_STAT_SEED = { weekKey:"2026-07-20", calls:120, emails:69, linkedin:0, meetings:4, opens:0, replies:0 };
+const MEETING_SEED = [
+  ["tradingtechnologies.com","Josh Casto","Thu Jul 23, 1:00pm CDT","JP"],
+  ["tradingtechnologies.com","Josh Casto","Fri Jul 24, 2:00pm CDT","JP"],
+  ["myhomey.ai","Cam Thomas","Wed Jul 22, 3:00pm MDT","JP"],
+  ["myhomey.ai","Cam Thomas","Fri Jul 24, 12:30pm PDT","JP"]
+];
+// Last 60 days of calls (2026-05-23 through 2026-07-22), matched to an account by contact
+// name where that contact appears in CONTACTS_MAP above. HubSpot logged 78 calls in this
+// window; 27 could be matched to a known account this pass, the rest belong to contacts
+// not yet pulled into the console (JP's book has 1,714 contacts total, only a portion
+// synced so far). A deeper refresh will fill in the remainder.
+const TOUCH_SEED = [
+  ["nuro.ai","call","2026-07-10T17:56:16Z"],["nuro.ai","call","2026-07-01T15:31:24Z"],
+  ["nuro.ai","call","2026-06-24T23:38:50Z"],["nuro.ai","call","2026-06-03T17:49:51Z"],
+  ["crusoe.ai","call","2026-07-10T17:35:14Z"],["crusoe.ai","call","2026-07-01T15:29:42Z"],
+  ["crusoe.ai","call","2026-06-26T18:30:26Z"],["crusoe.ai","call","2026-06-23T22:42:34Z"],
+  ["workiva.com","call","2026-07-10T14:54:05Z"],["workiva.com","call","2026-06-26T17:42:38Z"],
+  ["workiva.com","call","2026-06-26T17:38:09Z"],["workiva.com","call","2026-05-29T17:04:39Z"],
+  ["workiva.com","call","2026-06-26T19:25:46Z"],
+  ["intralinks.com","call","2026-07-10T17:27:38Z"],
+  ["finthrive.com","call","2026-07-01T18:57:18Z"],
+  ["cas.org","call","2026-07-01T15:48:55Z"],
+  ["availity.com","call","2026-07-01T15:37:54Z"],
+  ["kentik.com","call","2026-06-26T18:25:40Z"],
+  ["flywire.com","call","2026-06-26T18:02:44Z"],
+  ["includedhealth.com","call","2026-06-25T00:35:44Z"],
+  ["restaurant365.com","call","2026-06-26T18:33:12Z"],
+  ["calamp.com","call","2026-06-17T19:26:08Z"],
+  ["ebsco.com","call","2026-05-29T16:38:52Z"],
+  ["aofl.com","call","2026-06-23T22:46:33Z"],
+  ["verticalscope.com","call","2026-06-23T19:31:45Z"],
+  ["lotusflare.com","call","2026-07-10T21:00:56Z"],
+  ["onxmaps.com","call","2026-07-22T21:09:29Z"],["onxmaps.com","call","2026-07-22T21:08:15Z"]
+];
+
+// Calls this week that HubSpot's own call outcome marked as a real connect (someone
+// picked up or engaged), across both reps, with the call notes pulled from HubSpot.
+const CONNECTED_SEED = [
+  ["nuro.ai","James Yu","Ali","Called about managing cloud commitments (savings plans, reserved instances). James said he was busy and asked to be taken off the call list, not interested right now."],
+  ["airtable.com","Anand Iyer","Ali","Answered and hung up quickly. No further notes captured on the call."],
+  [null,"Ananthram P S","Ali","Already has an internal tool with visibility plus auto buy and exchange of commitments. Most interested in spot instance management and wants to fine tune it more than they can today. Sent a comparison to review, he said he'd follow up."],
+  ["avetta.com","Brian Wang","Ali","DevOps handles commitments today, trying to hand it to FinOps and finance. Doing it manually with homegrown dashboards, already cut $10 to 20k. Mainly AWS, currently focused on bringing down token spend, not interested right now."]
+];
+
+// Every call logged this week across the book, both reps, for the calls drill down.
+// [contact, domain or null, rep, outcome]
+const CALLS_WEEK_DETAIL = [
+["Leiyian Motongo","q2.com","Ali","No answer"],["Jeff Coghlin","onxmaps.com","JP","Wrong number"],
+["Benjamin Fielden","onxmaps.com","JP","No answer"],["David Spillers","affinitiv.com","Ali","No answer"],
+["Catherine W.","medecision.com","Ali","No answer"],["Ben Pruitt","10xgenomics.com","Ali","No answer"],
+["Braden Senst","pathai.com","Ali","No answer"],["Pete Stoneberg","cyderes.com","Ali","No answer"],
+["Venkataraghavan Gandur","10xgenomics.com","Ali","No answer"],["Hayder Casey","10xgenomics.com","Ali","No answer"],
+["Robert Corradini","cytel.com","Ali","No answer"],["Robert Corradini","cytel.com","Ali","No answer"],
+["Joseph W.","medecision.com","Ali","No answer"],["Chris B",null,"Ali","No answer"],
+["Chris B",null,"Ali","No answer"],["Brian M.","he360.com","Ali","No answer"],
+["Joseph W.","medecision.com","Ali","No answer"],["Jeremy Simmons","humaninterest.com","Ali","No answer"],
+["Jason Wofford","affinitiv.com","Ali","No answer"],["Andrew Clark","10xgenomics.com","Ali","No answer"],
+["Rodrigo Navarro","anuvu.com","Ali","No answer"],["Brian M.","he360.com","Ali","No answer"],
+["Brian M.","he360.com","Ali","No answer"],["Marc W. Bourgeois","fetch.com","Ali","No answer"],
+["Kyler Bush",null,"Ali","No answer"],["Rodrigo Navarro","anuvu.com","Ali","No answer"],
+["Shauna Beland","dana-farber.org","Ali","No answer"],["Sean Willison","availity.com","Ali","No answer"],
+["Matthew Greenwood","cas.org","Ali","No answer"],["Jens Wachtel",null,"Ali","No answer"],
+["Erik W.","adventhealth.com","Ali","No answer"],["Chris Cone","arrivelogistics.com","Ali","No answer"],
+["Chris Cone","arrivelogistics.com","Ali","No answer"],["Chad Bowser","restaurant365.com","Ali","No answer"],
+["Bryan Blisniuk","ebsco.com","Ali","No answer"],["Rodrigo Navarro","anuvu.com","Ali","No answer"],
+["Vadim Uchitel",null,"Ali","No answer"],["James Yu","nuro.ai","Ali","DM Connected, negative"],
+["Blake Kaufman","dana-farber.org","Ali","No answer"],["Alexander Grieco",null,"Ali","No answer"],
+["Ajay Subramanian","tetrascience.com","Ali","No answer"],["Mykola Grygoriev",null,"Ali","No answer"],
+["Rodrigo Navarro","anuvu.com","Ali","No answer"],["Bret Martin",null,"Ali","No answer"],
+["David Spillers","affinitiv.com","Ali","No answer"],["David Spillers","affinitiv.com","Ali","No answer"],
+["David Spillers","affinitiv.com","Ali","No answer"],["Richard Beck","affinitiv.com","Ali","No answer"],
+["Richard Beck","affinitiv.com","Ali","No answer"],["Julien Anguenot","1111systems.com","Ali","Voicemail"],
+["Joseph W.","medecision.com","Ali","No answer"],["Yuval Avidor",null,"JP","No answer"],
+["Ben Pruitt","10xgenomics.com","Ali","No answer"],["Pete Stoneberg","cyderes.com","Ali","No answer"],
+["Terry Lau","rapidai.com","Ali","No answer"],["Hayder Casey","10xgenomics.com","Ali","No answer"],
+["Nainesh Patel","finthrive.com","Ali","No answer"],["Chris B",null,"Ali","No answer"],
+["Chris B",null,"Ali","No answer"],["Brian M.","he360.com","Ali","No answer"],
+["June Zhang","lotusflare.com","Ali","No answer"],["Anthony Kroeker","opensignal.com","Ali","No answer"],
+["Joe Hajovsky","q2.com","Ali","Voicemail"],["Brian M.","he360.com","Ali","No answer"],
+["Julien Anguenot","1111systems.com","Ali","Voicemail"],["Chris Knight",null,"Ali","No answer"],
+["Catherine W.","medecision.com","Ali","Voicemail"],["Joseph W.","medecision.com","Ali","Voicemail"],
+["Chris B",null,"Ali","Voicemail"],["Brian M.","he360.com","Ali","Voicemail"],
+["Richard Beck","affinitiv.com","Ali","No answer"],["Joe Hajovsky","q2.com","Ali","Voicemail"],
+["David Spillers","affinitiv.com","Ali","No answer"],["Ben Pruitt","10xgenomics.com","Ali","No answer"],
+["Jeremy Simmons","humaninterest.com","Ali","No answer"],["Venkataraghavan Gandur","10xgenomics.com","Ali","No answer"],
+["Scott Carpenter","sensortower.com","Ali","No answer"],["Jason Wofford","affinitiv.com","Ali","No answer"],
+["Hayder Casey","10xgenomics.com","Ali","No answer"],["Andrew Clark","10xgenomics.com","Ali","No answer"],
+["Chris Cone","arrivelogistics.com","Ali","No answer"],["Chris B",null,"Ali","No answer"],
+["Brian M.","he360.com","Ali","No answer"],["Karen Inman","konghq.com","Ali","No answer"],
+["Brian M.","he360.com","Ali","No answer"],["Ananthram P S",null,"Ali","Connected"],
+["Dan Montoya",null,"Ali","Voicemail"],["Anand Iyer","airtable.com","Ali","Answered and hung up"],
+["Ted Bechtold","csiweb.com","Ali","No answer"],["Kevin Latta","csiweb.com","Ali","No answer"],
+["Kevin Latta","csiweb.com","Ali","No answer"],["Arjita Ghosh",null,"Ali","No answer"],
+["Rob Brown","kentik.com","Ali","No answer"],["Charlene Bunting","workiva.com","Ali","No answer"],
+["Keith Laban","airtable.com","Ali","Voicemail"],["Cedric Godbout",null,"Ali","No answer"],
+["Bharath Nagendraprasad",null,"Ali","No answer"],["Keith Laban","airtable.com","Ali","No answer"],
+["Jay Drago",null,"Ali","No answer"],["Benjamen Keroack",null,"Ali","No answer"],
+["Rebekah Williams",null,"Ali","Voicemail"],["Priyanka G",null,"Ali","No answer"],
+["Jeremy Pries",null,"Ali","No answer"],["Rebekah Williams",null,"Ali","Voicemail"],
+["Ted Bechtold","csiweb.com","Ali","No answer"],["Michael Beltz","uplandsoftware.com","Ali","No answer"],
+["Arjita Ghosh",null,"Ali","No answer"],["Jonathan Lowe","workiva.com","Ali","No answer"],
+["Charlene Bunting","workiva.com","Ali","No answer"],["Brian Wang","avetta.com","Ali","DM Connected, negative"],
+["Ted Bechtold","csiweb.com","Ali","No answer"],["Michael Beltz","uplandsoftware.com","Ali","No answer"],
+["Rob Brown","kentik.com","Ali","No answer"],["David Azose",null,"Ali","No answer"],
+["Luis Diaz Sendel","flywire.com","Ali","No answer"],["Jonathan Lowe","workiva.com","Ali","No answer"],
+["Kevin Latta","csiweb.com","Ali","No answer"],["Kevin Latta","csiweb.com","Ali","No answer"],
+["Arjita Ghosh",null,"Ali","No answer"],["Keith Laban","airtable.com","Ali","No answer"]
+];
+
+// Every email engagement logged this week across the book, both reps.
+// [subject, domain or null, rep]
+const EMAILS_WEEK_DETAIL = [
+["platform volatility","onxmaps.com","JP"],["task worth automating","crusoe.ai","JP"],
+["FinOps / Cloud Transformation","dana-farber.org","JP"],["CUD comparison","onxmaps.com","JP"],
+["CUD comparisons","onxmaps.com","JP"],["stranded coverage?","adventhealth.com","Ali"],
+["Vista cloud optimization / ProsperOps",null,"Other rep"],["wrong person?","opensignal.com","Ali"],
+["M&A - cloud margins","mediakind.com","JP"],["EBITDA expansion","opensignal.com","JP"],
+["Accepted: ProsperOps Fri Jul 24","tradingtechnologies.com","JP"],["AWS, Azure, GCP","rapidai.com","Ali"],
+["rolling 30-day commits?","finthrive.com","Ali"],["Automatic reply: esr benchmark",null,"Ali"],
+["esr benchmark","q2.com","Ali"],["Updated invitation Fri Jul 24, 1pm","tradingtechnologies.com","JP"],
+["Updated invitation Fri Jul 24, 12pm","tradingtechnologies.com","JP"],["Re: FinOps Community Meetup, Boston","cytel.com","JP"],
+["Re: derisking aws commitments","cyderes.com","JP"],["Accepted: ProsperOps Thu Jul 23","tradingtechnologies.com","Other rep"],
+["wrong person?","medecision.com","Ali"],["ProsperOps revisit","iyuno.com","JP"],["esr benchmark","cytel.com","Ali"],
+["stranded coverage?","pathai.com","Ali"],["stranded coverage?","pathai.com","Ali"],
+["stranded coverage?","pathai.com","Ali"],["stranded coverage?","pathai.com","Ali"],
+["Accepted: ProsperOps Thu Jul 23","tradingtechnologies.com","JP"],["Invitation Thu Jul 23, 11am","tradingtechnologies.com","JP"],
+["Updated invitation Thu Jul 23, 12pm","tradingtechnologies.com","JP"],["Updated invitation Wed Jul 22, 10am","tradingtechnologies.com","JP"],
+["VP infra @ CleverTap","10xgenomics.com","Ali"],["VP infra @ CleverTap","10xgenomics.com","Ali"],
+["stranded coverage?","humaninterest.com","Ali"],["Is upgrading your VM worth it?",null,"Other rep"],
+["Is upgrading your VM worth it?",null,"Other rep"],["VP infra @ CleverTap","affinitiv.com","Ali"],
+["VP infra @ CleverTap","affinitiv.com","Ali"],["VP infra @ CleverTap","affinitiv.com","Ali"],
+["VP infra @ CleverTap","1111systems.com","Ali"],["Re: Upcoming Webinar on VM Modernization","ebsco.com","Automated"],
+["Re: Upcoming Webinar on VM Modernization Costs","finthrive.com","Automated"],["Re: Upcoming Webinar on VM modernization","digicert.com","Automated"],
+["VP infra @ CleverTap","medecision.com","Ali"],["Re: ROI analysis for Azure commitments","adventhealth.com","JP"],
+["velocity and cost","fetch.com","JP"],["VP infra @ CleverTap","finthrive.com","Ali"],
+["Re: ProsperOps Saving Analysis, Required IAM Permissions","ttx.com","JP"],["wrong person?","lotusflare.com","Ali"],
+["rolling 30-day commits?","arrivelogistics.com","Ali"],["google costs","onxmaps.com","JP"],
+["Re: Upcoming Webinar on VM modernization","highnote.com","Automated"],["A single tweet can send Coinbase's AWS compute usage skyrocketing!","cyderes.com","Ali"],
+["Re: Upcoming Webinar: Beyond VM Performance","tetrascience.com","Automated"],["Re: Upcoming Webinar on VM Modernization Costs",null,"Automated"],
+["Re: Upcoming Webinar on VM Modernization Costs","digicert.com","Automated"],
+["wrong person?","workiva.com","Ali"],["wrong person?","uplandsoftware.com","Ali"],["finops","taboola.com","JP"],
+["wrong person?","airtable.com","Ali"],["stranded coverage?","csiweb.com","Ali"],
+["A single tweet can send Coinbase's AWS compute usage skyrocketing!","kentik.com","Ali"],
+["Re: Upcoming webinar on VM modernization","pagerduty.com","Automated"],["spend at scale","taboola.com","JP"],
+["A single tweet can send Coinbase's AWS compute usage skyrocketing!","avetta.com","Ali"],["stranded coverage?","flywire.com","Ali"],
+["A single tweet can send Coinbase's AWS compute usage skyrocketing!","workiva.com","Ali"],["stranded coverage?","intralinks.com","Ali"],
+["stranded coverage?","intralinks.com","Ali"]
+];
+
+// Last contacted date per account, pulled directly from HubSpot's own
+// notes_last_contacted field (falls back to last logged call date where that's blank).
+// This is the authoritative source for "how long since we touched this account" -
+// it's tracked natively by HubSpot itself, so no reconstruction from engagement
+// dumps is needed or more accurate.
+const STAGE_LABELS = {
+"1068168885":"Registration","1068168886":"Pending Approval","1068168960":"Accepted","1068168961":"Denied",
+"1101419043":"Pre-Qualified","27255722":"Evaluation","27255723":"Decision","27255724":"Negotiation",
+"43325347":"Closed Won","27255727":"Onboarded","27255728":"Closed lost"
+};
+
+// Deals pulled directly from HubSpot (owner 85782544), with the actual next-step notes
+// your team already wrote. [domain, dealName, stageId, amount, closeDateISO, nextStep]
+const DEALS_SEED = [
+["tradingtechnologies.com",62636894214,"Trading Technologies - AWS Compute (TTFI-atroot)","27255722",506,"2026-07-31","7.16 - Review SA with TT team to confirm settings prior to onboarding"],
+["northmarkstrategies.com",61625333027,"NorthMark Strategies - Azure","1101419043",0,"2026-09-30","7.17 - Said they don't have bandwidth atm for eval, trying to get them to just do setup. SA review needs to be rescheduled."],
+["carrix.com",60864462956,"Carrix - AWS","1101419043",0,"2026-09-30","7.17 - Moving to SA for AWS and Azure. Their AWS env is tiny, majority of $1.2M annual spend is from sister company, Tideworks. Need to get them involved, messaged CTO and Blackstone partner about it."],
+["commandalkon.com",60672998015,"Command Alkon - AWS","1101419043",0,"2026-10-31","7.17 - Project put on hold for an AWS Tagging initiative driven by CTO, will likely need to close out but haven't heard back on timeline."],
+["sgsco.com",60671798148,"SGS & Co - AWS Compute","1101419043",0,"2026-11-30","7.17 - SA review pushed until mid August. More pressing priorities per their VP and our partner."],
+["jdpower.com",60257795492,"JD Power - ElastiCache","27255722",282,"2026-08-31","See larger JD Power AWS Compute deal"],
+["jdpower.com",60259027526,"JD Power - Redshift","27255722",743,"2026-08-31","See larger JD Power AWS Compute deal"],
+["jdpower.com",60257794678,"JD Power - OpenSearch","27255722",1934,"2026-08-31","See larger JD Power AWS Compute deal"],
+["jdpower.com",60259027476,"JD Power - RDS","27255722",743,"2026-08-31","See larger JD Power AWS Compute deal"],
+["tradingtechnologies.com",60142159494,"Trading Technologies - OpenSearch","43325347",76,"2026-06-22","Closed won, rolled into the TT-Master compute deal"],
+["tradingtechnologies.com",60142227506,"Trading Technologies - ElastiCache","43325347",211,"2026-06-22","Closed won, rolled into the TT-Master compute deal"],
+["tradingtechnologies.com",60142036822,"Trading Technologies - RDS","43325347",2688,"2026-06-22","Closed won, rolled into the TT-Master compute deal"],
+["sgsco.com",59723622527,"Lead: SGS & Co - Logicalis UK&I*","1068168960",0,"2026-08-31","Partner-sourced lead via Logicalis UK&I"],
+["jdpower.com",59086317426,"JD Power - Azure","27255728",0,"2026-05-28","Closed lost, Azure setup never got going despite AWS side moving forward"],
+["jdpower.com",59086442078,"JD Power - AWS Compute","27255722",10311,"2026-08-31","7.16 - Sent updated June savings results. Still no exec sponsor, likely Mike or Meghan. Head of Procurement speaking with CTO week of July 13, meeting July 23."],
+["tradingtechnologies.com",58634267179,"Trading Technologies - AWS Compute (TT-Master)","43325347",9571,"2026-06-22","Closed won. Signatory was Mike Ryan (Chief Legal Officer), champion was Josh Casto (Dir of Eng) working with Gerry (SVP Infra). Year 1 savings estimate $166,933, M12 MRR $19,889."],
+["life.church",58634232677,"Life.Church - Cloud SQL","43325347",3849.13,"2026-06-23","07/20 - Checking in with CX on status of SQL go-live, part of the larger Life.Church compute deal"],
+["daxtra.com",58368997505,"Daxtra Technologies - AWS","27255727",3683,"2026-05-08","Onboarded, contract signed 5/7, onboarding call held 5/13"],
+["intralinks.com",58295557948,"Intralinks - AWS","27255728",0,"2026-04-28","Closed lost. Ruchit (internal contact) said other priorities were more pressing and put it on hold. He wasn't senior enough to push it through, would need a higher level contact."],
+["connectwise.com",57669069200,"ConnectWise - ElastiCache","27255727",2618,"2026-06-05","Onboarded, rolled into the larger ConnectWise AWS Compute deal"],
+["connectwise.com",57669006913,"ConnectWise - OpenSearch","27255727",1850,"2026-06-05","Onboarded, rolled into the larger ConnectWise AWS Compute deal"],
+["connectwise.com",57669060013,"ConnectWise - RDS","27255727",4340,"2026-06-05","Onboarded, rolled into the larger ConnectWise AWS Compute deal"],
+["accuray.com",56770325078,"Accuray Incorporated - Azure","1101419043",0,"2026-09-30","7.17 - No additional movement, moving slowly. Team said final step of setup 7/9, wants proof ProsperOps was acquired by Flexera beyond the press release."],
+["marqeta.com",55682498118,"Marqeta - AWS Compute","27255728",0,"2026-05-27","Closed lost (likely dead). CTO wants to wait until their new PPA is in place, June 2027. Main contact was Rebekah Williams."],
+["tradingtechnologies.com",55624484983,"Trading Technologies - AWS Compute (OG-Master)","43325347",1913,"2026-06-22","Closed won, rolled into the TT-Master relationship"],
+["connectwise.com",55389623710,"ConnectWise - AWS Compute","27255727",30104,"2026-06-05","Onboarded. Procurement contact was Damian Husak (Dir, Procurement), finance side was Jack McManus (VP, FP&A)."],
+["ttx.com",55197824317,"TTX - Azure","1101419043",0,"2026-09-30","7.17 - Said it'll take a few weeks to complete setup due to migration efforts. Main contact Johnnie went dark, manager is Dan Curran. Also engaging Kirk H (Director of Digital Ops) on the Flexera side."],
+["barracuda.com",54634187271,"Barracuda - Migrate Flexera","1101419043",0,"2026-11-30","6.11 - Flexera AM Amy Kavanagh sent an intro email, still no response from the Barracuda team."],
+["life.church",53121012393,"Life.Church - Google Compute","27255727",10218.46,"2026-06-23","Onboarded after a long cycle. Champion was Brenton, presenting internally alongside Chris to shared leadership."],
+["trmlabs.com",52994180734,"TRM Labs - Google Compute","27255728",8031.87,"2026-04-16","Closed lost / likely dead. Contact Michael went quiet, partner contact Liam was working the Thoma Bravo angle."],
+["stord.com",52389962406,"Stord - Google Cloud SQL","27255728",1502.47,"2026-01-12","Closed lost. Reviewed savings analysis with Nick Traylor (Head of Eng), Parker D. and Joey Grasso (Principal SREs), and Craig Stewart (SVP Product & Eng)."],
+["stord.com",52332121394,"Stord - Google Compute","27255727",1497.05,"2026-01-27","Onboarded, terms agreed and MPPO sent in late January"]
+];
+
+// PE firm ownership found directly on the deal record (private_equity_firm_sync).
+// Only set automatically the first time, never overwrites a manual edit afterward.
+const PE_FIRM_SEED = {
+"tradingtechnologies.com":"Thoma Bravo",
+"jdpower.com":"Thoma Bravo",
+"carrix.com":"Blackstone",
+"commandalkon.com":"Ares, Thoma Bravo",
+"connectwise.com":"Thoma Bravo",
+"barracuda.com":"Kohlberg Kravis Roberts",
+"trmlabs.com":"Goldman Sachs, Thoma Bravo, Bessemer"
+};
+
+// Contacts named directly in deal notes, added to each account if not already present.
+// [domain, name, role]
+const DEAL_CONTACTS_SEED = [
+["tradingtechnologies.com","Josh Casto","Director of Engineering, deal champion"],
+["tradingtechnologies.com","Mike Ryan","Chief Legal Officer, contract signatory"],
+["tradingtechnologies.com","Gerry","SVP Infrastructure (first name only, from deal notes)"],
+["jdpower.com","Ashley Miller","Finance, internal champion"],
+["connectwise.com","Damian Husak","Director, Procurement"],
+["connectwise.com","Jack McManus","VP, FP&A"],
+["marqeta.com","Rebekah Williams","Main deal contact"],
+["ttx.com","Dan Curran","Manager of primary contact Johnnie"],
+["ttx.com","Kirk H","Director of Digital Ops (Flexera side)"],
+["stord.com","Nick Traylor","Head of Engineering"],
+["stord.com","Parker D.","Principal SRE"],
+["stord.com","Joey Grasso","Principal SRE"],
+["stord.com","Craig Stewart","SVP Product & Engineering"],
+["life.church","Brenton","Internal champion (first name only, from deal notes)"],
+["intralinks.com","Ruchit","Internal contact, not senior enough to push the deal through"]
+];
+
+const COMPANY_ID_SEED = {
+"sgsco.com":54446622597,"daxtra.com":53213731990,"northmarkstrategies.com":45757685535,"meridianlink.com":4552959077,
+"carrix.com":30685632888,"calamu.com":30469719223,"acryldata.io":30469719301,"deno.com":30469719210,
+"accuray.com":39400596079,"life.church":29634666900,"finthrive.com":29643895069,"verticalscope.com":29298217344,
+"opensignal.com":29338253735,"highnote.com":29313424958,"empower.ai":28589283347,"verve.com":28578449040,
+"trmlabs.com":23477304638,"arize.com":22514154275,"exponential.com":22065296222,"upwind.io":45002318365,
+"cyderes.com":21193992708,"questrade.com":21162792736,"pinecone.io":42722555272,"ttx.com":17948682680,
+"everquote.com":17317834525,"oneneck.com":17318019634,"dataintensity.com":17317990410,"muvi.com":17318177674,
+"wolframalpha.com":17318166316,"tandems.ai":52077344130,"1111systems.com":17318143893,"sensortower.com":17317743508,
+"wibmo.co":43254975137,"workhuman.com":17314448721,"personetics.com":17302371341,"marketaxess.com":17302553107,
+"droit.tech":48779308724,"he360.com":17038675334,"dana-farber.org":54234846267,"commure.com":52540714930,
+"sayweee.com":16996323360,"dapperlabs.com":16996378512,"joinhonor.com":17162790240,"generatebiomedicines.com":16996245379,
+"opensea.io":16986855725,"jasper.ai":16965938564,"rapidai.com":16871434380,"nuro.ai":16871741511,
+"betanxt.com":16801818395,"yellow.ai":16791435583,"nextech.com":51934461537,"pathai.com":15944425552,
+"crusoe.ai":39354136102,"quizlet.com":15944464531,"centific.com":15843206783,"goodwaygroup.com":15620123559,
+"flyr.com":15509877558,"tetrascience.com":15482069536,"sai360.com":14777244562,"calamp.com":11245606292,
+"affinitiv.com":10425635602,"iyuno.com":10268399649,"hazelcast.com":9768438300,"apiture.com":9530565805,
+"netradyne.com":9530533429,"cas.org":9530572305,"adventhealth.com":9530576181,"pro-vigil.com":9370745208,
+"digicert.com":8506200468,"appomni.com":8416851483,"indigoag.com":8403667225,"getfareye.com":53230161225,
+"aofl.com":46838296677,"askbio.com":8362751099,"stord.com":8142992284,"fetch.com":8126868287,
+"onxmaps.com":8076169331,"lotusflare.com":8007186003,"restaurant365.com":7769823271,"manh.com":7754382603,
+"team.bumble.com":48896604777,"10xgenomics.com":7175323824,"jdpower.com":51934399565,"wolfram.com":7151675994,
+"jamcity.com":7109370695,"flyzipline.com":7100459096,"mediakind.com":7093912951,"trintech.com":33931212040,
+"medecision.com":7063530583,"konghq.com":42693954198,"q2.com":51934461487,"humaninterest.com":5868064035,
+"availity.com":5818039555,"tradingtechnologies.com":5818029688,"commandalkon.com":5818044982,"barracuda.com":5817980681,
+"cytel.com":5817860694,"arrivelogistics.com":5793934193,"ebsco.com":5749580128,"anuvu.com":5440831661,
+"uplandsoftware.com":5366218249,"csiweb.com":5285359020,"workiva.com":54968047685,"comscore.com":5172419117,
+"kraken.com":44695466096,"contentstack.com":5051773597,"marqeta.com":4955769952,"airtable.com":30664592204,
+"liveperson.com":28791095725,"intralinks.com":4870449825,"avetta.com":4714070133,"taboola.com":4584966144,
+"pagerduty.com":42704537272,"kentik.com":42719770152,"includedhealth.com":32865112108,"bluecore.com":4474801193,
+"flywire.com":4473662352,"conversica.com":4452239020,"connectwise.com":4452211607,"buzzfeed.com":4435115558
+};
+
+const HUBSPOT_PORTAL = "8382674";
+function hubspotCompanyUrl(domain){ const id = COMPANY_ID_SEED[domain]; return id? "https://app.hubspot.com/contacts/"+HUBSPOT_PORTAL+"/record/0-2/"+id : null; }
+function hubspotDealUrl(dealId){ return dealId? "https://app.hubspot.com/contacts/"+HUBSPOT_PORTAL+"/record/0-3/"+dealId : null; }
+function hubspotContactUrl(contactId){ return contactId? "https://app.hubspot.com/contacts/"+HUBSPOT_PORTAL+"/record/0-1/"+contactId : null; }
+
+// Real contact IDs and verified job titles, resolved by matching each name's email domain
+// to the right company (several of these names are shared by multiple HubSpot contacts).
+// Keyed as "domain|lowercase name".
+const CONTACT_ID_SEED = {
+"jdpower.com|ashley miller":{id:205942014208,title:"Head of Procurement and Sourcing"},
+"connectwise.com|damian husak":{id:199262153602,title:"Director of Procurement"},
+"connectwise.com|jack mcmanus":{id:198727718292,title:"Vice President, Financial Planning and Analysis"},
+"tradingtechnologies.com|josh casto":{id:202137143859,title:"Director of Systems Engineering"},
+"stord.com|joey grasso":{id:186388422683,title:"Senior Site Reliability Engineer"},
+"stord.com|nick traylor":{id:185138358869,title:"Senior Engineering Manager, OMS"},
+"stord.com|craig stewart":{id:185675056423,title:"Senior Vice President of Product and Engineering"},
+"marqeta.com|rebekah williams":{id:113935905954,title:"Strategy & Operations Senior Manager"},
+"ttx.com|dan curran":{id:6287051,title:"Sr. Manager, Service Management Office"},
+"onxmaps.com|owen samuels":{id:235966825028,title:"Chief Technology Officer"},
+"onxmaps.com|jeff coghlin":{id:236977786457,title:"Director, Information Technology"},
+"onxmaps.com|bergen davell":{id:235967541023,title:"Director of Platform, Product"},
+"flyr.com|ryan stoll":{id:226187994895,title:"Sr. FP&A Manager"},
+"opensignal.com|anthony kroeker":{id:214196776523,title:"VP Systems"},
+"opensignal.com|christine li":{id:236959804188,title:"Director of FP&A"},
+"opensignal.com|dean jackman":{id:227567162915,title:"Head of Infrastructure"},
+"fetch.com|brian granetzke":{id:234463254148,title:"Chief Architect"},
+"fetch.com|matt pavlik":{id:226188001347,title:"Senior Director Enterprise IT & Information Security"},
+"nextech.com|brian schnieders":{id:236815120133,title:"Senior Cloud Platform Engineer"},
+"nextech.com|anton butsko":{id:236798083436,title:"Senior Cloud Platform Engineer"},
+"q2.com|leiyian motongo":{id:236846939768,title:"FinOps Lead"},
+"q2.com|joe hajovsky":{id:235920439648,title:"Cloud Operations Manager"},
+"q2.com|lalit agarwal":{id:216996021086,title:"Senior Director of Software Engineering"},
+"cytel.com|pranav khaladkar":{id:236698864673,title:"Director, Cloud Operations"},
+"iyuno.com|tomasz bińkowski":{id:236846004340,title:"Head of Cloud Services"},
+"iyuno.com|jai munisamy":{id:236784836360,title:"Global Vice President, Information Technology"},
+"kentik.com|aaron smith":{id:236793879883,title:"Vice President, Product Engineering"},
+"kentik.com|matthew hightower":{id:215646807077,title:"Engineering Operations Director"},
+"kentik.com|brian fegan":{id:217026097691,title:"Director, Engineering"},
+"carrix.com|jim downing":{id:221661077146,title:"Vice President, Chief Information Officer"},
+"carrix.com|todd spitzer":{id:229764745308,title:"Director of IT Infrastructure"},
+"carrix.com|merima adee":{id:226187973995,title:"Director of Category Management"},
+"mediakind.com|paul burgdorf":{id:235230436766,title:"Chief Financial Officer (One Equity Partners)"},
+"mediakind.com|oren sharoni":{id:235443677975,title:"Platform Head of Architecture"},
+"mediakind.com|kesav kumar":{id:235443677976,title:"Global Senior Manager, Information Technology Operations"},
+"kraken.com|víctor fernández":{id:235222057647,title:"Senior Site Reliability Engineer"},
+"kraken.com|james baxter":{id:221661123867,title:"Manager, Platform Operations"},
+"workiva.com|kim huffman":{id:231141386383,title:"CIO"},
+"workiva.com|lynn nagel":{id:231141944361,title:"Vice President of Product Strategy and Operations"},
+"workiva.com|charlene bunting":{id:230924277290,title:"Vice President, Engineering"},
+"workiva.com|nick van der merwe":{id:224784593669,title:"VP of Engineering"},
+"includedhealth.com|annabel liu":{id:215646800676,title:"Senior Vice President of Engineering"},
+"includedhealth.com|mayank roy":{id:234520728678,title:"Senior Procurement Manager"},
+"cyderes.com|scott mitchell":{id:234521186599,title:"Director, Systems & Cloud Engineering"},
+"cyderes.com|victor otazú":{id:230924277293,title:"Software Engineering Manager"},
+"lotusflare.com|shao xia":{id:220264011586,title:"Co Founder / Head of Engineering"},
+"lotusflare.com|kostiantyn skrypnyk":{id:234515327536,title:"Infrastructure Solution Architect"},
+"humaninterest.com|jeremy simmons":{id:234500189192,title:"Senior IT Systems Specialist"},
+"humaninterest.com|jack hall":{id:234507744328,title:"Senior Software Engineer"},
+"crusoe.ai|dan hochberg":{id:226188001589,title:"Vice President, Finance and Business Operations"},
+"crusoe.ai|david richardson":{id:220128023896,title:"Vice President of Infrastructure Engineering"},
+"crusoe.ai|kostas kassaras":{id:234489809176,title:"Director of Engineering, Global Infrastructure"},
+"liveperson.com|muhammad saifuddin":{id:233896102935,title:"Manager, Engineering Cloud DevOps"},
+"konghq.com|bhushan khajurkar":{id:233875124054,title:"Director, Engineering"},
+"konghq.com|karen inman":{id:233875124055,title:"Senior Manager, Engineering Operations"},
+"contentstack.com|dean haddock":{id:233883955815,title:"Group Product Manager, Platform & Hosting"},
+"contentstack.com|pooja shah":{id:233883905802,title:"Team Lead, DevOps"},
+"tradingtechnologies.com|alex madden":{id:233870163821,title:"CISO"},
+"tradingtechnologies.com|elmedina musinovic":{id:233882044055,title:"VP Platform Services"},
+"tradingtechnologies.com|deval haria":{id:229515187259,title:"Senior Contract Manager"},
+"comscore.com|michael behrens":{id:231413184407,title:"Vice President, Systems Engineering"},
+"comscore.com|amit puranik":{id:233863419136,title:"Senior Manager, Systems Engineering"},
+"team.bumble.com|brian healey":{id:233827175971,title:"Principal Software Engineer"},
+"team.bumble.com|ryan gooler":{id:218238579827,title:"Senior Security Engineer"},
+"intralinks.com|timberly sweeney":{id:232027874401,title:"VP, Product Operations"},
+"intralinks.com|tarun gupta":{id:219915382175,title:"Engineering Leader, Platform & Distributed Systems"},
+"intralinks.com|oscar suarez":{id:219915384753,title:"Director, Platform Engineering"},
+"restaurant365.com|ryan polk":{id:224322328885,title:"Chief Product & Technology Officer"},
+"restaurant365.com|jessica lanier":{id:214640459958,title:"Chief Financial Officer"},
+"restaurant365.com|andrew korbel":{id:224322331789,title:"SVP Engineering & R&D Operations"},
+"adventhealth.com|herb keller":{id:228804898610,title:"Senior Vice President, Chief Information Officer"},
+"adventhealth.com|erik watts":{id:228805083497,title:"Vice President Information Technology Infrastructure"},
+"personetics.com|yaniv itzhaki":{id:218514852537,title:"VP R&D"},
+"personetics.com|sharon atlas-bendavid":{id:218514852683,title:"Director of Cloud Services"},
+"marketaxess.com|william quan":{id:224840959290,title:"Chief Technology Officer"},
+"he360.com|wendy johnson":{id:226169433746,title:"Vice President of Product"},
+"he360.com|brian m.":{id:235428551007,title:"Director, Platform Engineering"},
+"dana-farber.org|shauna beland":{id:215620544150,title:"AVP, Enterprise IT Infrastructure & Operations"},
+"dana-farber.org|kevin mann":{id:215620495020,title:"Vice President of Business Transformation"},
+"sayweee.com|zuming xie":{id:230855128360,title:"Chief Technology Officer"},
+"dapperlabs.com|harold s.":{id:230956580191,title:"Senior Infrastructure & Site Reliability Engineer"},
+"dapperlabs.com|jonathan teplitsky":{id:215646802259,title:"AI & Automation Lead"},
+"generatebiomedicines.com|vikram sadineni":{id:230921625244,title:"Vice President, Technical Operations"},
+"generatebiomedicines.com|kyle ian":{id:233819425617,title:"Principal Enterprise Architect"},
+"jasper.ai|bryan tsao":{id:215608499626,title:"Chief Product Officer"},
+"jasper.ai|marc james":{id:215608506016,title:"Director, IT and AI Enablement"},
+"rapidai.com|amit s phadnis":{id:218491068416,title:"Chief Innovation and Technology Officer"},
+"rapidai.com|sreenath dindukurthi":{id:218504452102,title:"Director of Engineering"},
+"nuro.ai|michael mancini":{id:227413543433,title:"Chief Financial Officer"},
+"nuro.ai|jack guo":{id:227209362186,title:"VP of Engineering, AI Platform"},
+"nuro.ai|peter he":{id:226150289169,title:"Director of IT & Infrastructure"},
+"nuro.ai|james yu":{id:226150277271,title:"Tech Lead Manager"},
+"betanxt.com|david olson":{id:228804777295,title:"Head of Software Engineering"},
+"yellow.ai|jishnu kumar":{id:230924277292,title:"Associate Director, Platform Engineering & Operations"},
+"pathai.com|don o'neill":{id:225855927046,title:"Chief Technology Officer"},
+"quizlet.com|zheng li":{id:225601554978,title:"VP of Engineering, AI and Data"},
+"quizlet.com|reinhold staudinger":{id:231141814550,title:"Chief Architect"},
+"centific.com|shyam sundar rathinam":{id:224856892293,title:"Director of Microsoft Delivery"},
+"centific.com|rajib basu":{id:224856933393,title:"Director, Solution Architecture"},
+"tetrascience.com|naveen kondapalli":{id:224322336375,title:"Chief Development Officer"},
+"tetrascience.com|kai wang":{id:215782958392,title:"Director of Engineering"},
+"sai360.com|pat piccolo":{id:227615988895,title:"Sr. Director, Enterprise Architecture"},
+"calamp.com|jikun kim":{id:224856933543,title:"Chief Financial Officer"},
+"calamp.com|hamid r":{id:224841020296,title:"VP, Head of Global IT (Acting CIO)"},
+"calamp.com|ali ghulamali":{id:224856892495,title:"VP, Software Engineering"},
+"affinitiv.com|jason wofford":{id:224856931226,title:"VP of Software Engineering"},
+"affinitiv.com|david spillers":{id:224841020468,title:"VP, Infrastructure IT"},
+"hazelcast.com|edward thurman":{id:220263455020,title:"Senior Engineering Manager"},
+"hazelcast.com|graeme waggott":{id:220276046609,title:"Senior Engineering Manager"},
+"digicert.com|unmesh patil":{id:230897092694,title:"VP Engineering"},
+"digicert.com|kheezer ali":{id:221372516008,title:"Cloud FinOps Analyst"},
+"appomni.com|pedro treccani":{id:214629684901,title:"Senior Engineering Manager"},
+"indigoag.com|andrew mcloud":{id:217663216739,title:"Senior Director of Engineering"},
+"indigoag.com|jacob mcdonald":{id:217663154785,title:"VP of Digital Technology"},
+"getfareye.com|shashi kumar":{id:220338802452,title:"Site Reliability Engineer 2"},
+"aofl.com|james iannarelli":{id:230718257943,title:"Director of Technology Operations"},
+"manh.com|thakurdas paul":{id:221636880252,title:"VP, Cloud Operations and Cloud Services"},
+"10xgenomics.com|serge saxonov":{id:230868387640,title:"CEO & Co-Founder"},
+"10xgenomics.com|joseph kovac":{id:231402831508,title:"Senior Director, Technology Strategy"},
+"wolfram.com|john pacey":{id:217663342149,title:"Director of Cloud Development"},
+"jamcity.com|matthew fedynyshyn":{id:214629488288,title:"Chief Architect"},
+"flyzipline.com|kyle madonia":{id:227431942227,title:"VP of Application Software and IT"},
+"flyzipline.com|marcus mueller":{id:227431949469,title:"Head of P2 Business and US Operations"},
+"trintech.com|kai axford":{id:215763114920,title:"VP Global IT Operations & Security (CIO/CISO)"},
+"medecision.com|catherine w.":{id:227352374439,title:"Senior Director of Infrastructure and Operations"},
+"medecision.com|shaheen merchant":{id:215420488976,title:"Director Cloud Architecture"},
+"availity.com|brent backhaus":{id:226150327934,title:"VP Software Engineering"},
+"availity.com|yar savchenko":{id:224856899447,title:"VP of Infrastructure"},
+"commandalkon.com|ranjeev teelock":{id:219886934313,title:"Chief Product Officer"},
+"commandalkon.com|chad eldridge":{id:232143810097,title:"VP, Information Systems"},
+"arrivelogistics.com|kurt bidwell":{id:217725252192,title:"Director, IT Infrastructure & Security"},
+"ebsco.com|sobha duvvuri":{id:220338806064,title:"Global Director of Cloud Operations"},
+"ebsco.com|michael michaud":{id:225856547187,title:"Director, Agile Software Development"},
+"anuvu.com|rodrigo navarro":{id:217725261940,title:"VP, Global Technology Services"},
+"anuvu.com|claudio vignali avellan":{id:217663154082,title:"Senior Director, Product Development"},
+"uplandsoftware.com|costas louca":{id:227575941518,title:"Director of Cloud Operations, EMEA"},
+"csiweb.com|kevin latta":{id:215420474966,title:"Senior VP, Platform Operations"},
+"csiweb.com|ted bechtold":{id:214210614785,title:"Senior Director, Information Technology"},
+"airtable.com|anand iyer":{id:220262942214,title:"Head of Global Procurement & Sourcing"},
+"taboola.com|yehuda levi":{id:220339232912,title:"Site Reliability Engineer, Team Lead"},
+"pagerduty.com|marlin scott":{id:227431925505,title:"Director, Software Engineering"},
+"flywire.com|jose luis salas":{id:220338805874,title:"Director, Site Reliability Engineering"},
+"flywire.com|cristóbal morente":{id:230881437283,title:"Head/Senior Manager, Cloud & Infra Security"},
+"buzzfeed.com|jonah peretti":{id:217026313546,title:"Founder and CEO"},
+"northmarkstrategies.com|christian moore":{id:229764750886,title:"VP, Infrastructure Operations"},
+"northmarkstrategies.com|chris cantrell":{id:229764750706,title:"Senior System Administrator"},
+"pinecone.io|ash ashutosh":{id:228805064234,title:"CEO"},
+"pinecone.io|jeffrey zhu":{id:226169431327,title:"VP, Product"},
+"dataintensity.com|chandrasekhar velpula":{id:228805062222,title:"Manager of Cloud Operations"},
+"1111systems.com|julien anguenot":{id:230921625251,title:"SVP Software Engineering"},
+"1111systems.com|haim glickman":{id:230921625248,title:"Senior VP, Cost Management & DC Operations"},
+"cas.org|rooma hartman":{id:226150276198,title:"Senior Director, Application Technology"},
+"cas.org|luke chandler":{id:226676240743,title:"AWS FinOps"},
+"verticalscope.com|aj gulati":{id:229708570005,title:"Director of Engineering"},
+"verve.com|david cullen":{id:218238080886,title:"Engineering Director"},
+"verve.com|leo snetsinger":{id:218238717072,title:"Platform Engineering Manager"},
+"sgsco.com|brian densford":{id:218211906196,title:"Senior VP, Global IT Service Delivery"},
+"upwind.io|david livshits":{id:231400783734,title:"Director of Operations, CTO Office"},
+"wibmo.co|balaji santhanakrishnan":{id:220264016144,title:"IT Director"},
+"finthrive.com|george mechael":{id:221846044069,title:"SVP Engineering & Interim CTO"},
+"finthrive.com|mohan kandasamy":{id:220127957065,title:"Lead Architect"},
+"life.church|holly mchargue":{id:221871082081,title:"Director of Operations"},
+"accuray.com|kenneth mullikin":{id:219915349082,title:"System Administrator"},
+"arize.com|chris hendel":{id:220127951731,title:"Head of Engineering"},
+"everquote.com|daniel perzan":{id:217162630773,title:"Engineering Manager"},
+"empower.ai|aerin zimmermann":{id:217163091895,title:"VP, DevSecOps"},
+"myhomey.ai|cam thomas":{id:236105306176,title:"Tech Lead Manager, Optimization"}
+};
+
+const LAST_CONTACTED_SEED = {
+"sgsco.com":"2026-06-23T15:14:05Z","daxtra.com":"2026-05-16T16:08:23.694Z",
+"northmarkstrategies.com":"2026-07-17T01:56:26.617Z","meridianlink.com":"2026-07-02T22:56:59.568Z",
+"carrix.com":"2026-07-15T22:12:29.963Z","calamu.com":"2026-03-30T22:38:25Z",
+"accuray.com":"2026-07-14T15:14:15.212Z","life.church":"2026-07-09T15:30:00Z",
+"finthrive.com":"2026-07-22T13:34:06.244Z","verticalscope.com":"2026-07-22T23:29:16.590Z",
+"opensignal.com":"2026-07-22T18:16:06.463Z","highnote.com":"2026-07-20T19:11:00.754Z",
+"empower.ai":"2026-04-24T14:43:37.259Z","verve.com":"2026-07-15T21:53:09.394Z",
+"trmlabs.com":"2026-05-22T20:05:58.249Z","arize.com":"2026-05-21T21:41:24.538Z",
+"upwind.io":"2026-07-21T16:22:06.295Z","cyderes.com":"2026-07-22T18:44:24.408Z",
+"questrade.com":"2026-06-01T19:24:05.987Z","pinecone.io":"2026-07-10T17:12:16.700Z",
+"ttx.com":"2026-07-20T21:31:53.213Z","everquote.com":"2026-07-15T20:46:00.824Z",
+"dataintensity.com":"2026-06-22T22:43:28.559Z","muvi.com":"2026-07-01T17:32:06.611Z",
+"1111systems.com":"2026-07-21T18:09:57.388Z","sensortower.com":"2026-07-20T18:48:53.909Z",
+"wibmo.co":"2026-07-08T15:21:06.102Z","workhuman.com":"2026-07-17T18:37:02.036Z",
+"personetics.com":"2026-07-17T16:48:59.402Z","marketaxess.com":"2026-07-21T21:52:13.093Z",
+"droit.tech":"2026-06-03T14:25:33.602Z","he360.com":"2026-07-22T18:37:18.779Z",
+"dana-farber.org":"2026-07-22T22:46:01.361Z","commure.com":"2026-07-17T22:23:01.395Z",
+"sayweee.com":"2026-06-30T21:42:42.245Z","dapperlabs.com":"2026-07-21T20:35:30.441Z",
+"joinhonor.com":"2026-06-30T18:47:50.965Z","generatebiomedicines.com":"2026-07-21T18:42:21.349Z",
+"opensea.io":"2026-07-15T20:38:18.270Z","jasper.ai":"2026-06-10T21:23:12.515Z",
+"rapidai.com":"2026-07-22T14:22:05.462Z","nuro.ai":"2026-07-21T20:38:29.264Z",
+"betanxt.com":"2026-03-06T21:35:19Z","yellow.ai":"2026-06-29T19:58:01.753Z",
+"nextech.com":"2026-06-23T13:37:06.557Z","pathai.com":"2026-07-22T18:44:47.099Z",
+"crusoe.ai":"2026-07-22T22:54:30.370Z","quizlet.com":"2026-07-09T22:37:59.623Z",
+"goodwaygroup.com":"2026-05-14T19:22:29.290Z","flyr.com":"2026-07-02T13:12:02.423Z",
+"tetrascience.com":"2026-07-21T20:34:57.682Z","sai360.com":"2026-07-07T18:45:34.062Z",
+"calamp.com":"2026-06-17T19:43:15.151Z","affinitiv.com":"2026-07-22T21:36:10.109Z",
+"iyuno.com":"2026-07-21T22:05:35.738Z","hazelcast.com":"2026-07-15T21:00:19.606Z",
+"apiture.com":"2026-02-18T00:52:31.556Z","netradyne.com":"2026-07-10T14:45:56.775Z",
+"cas.org":"2026-07-21T21:25:05.957Z","adventhealth.com":"2026-07-22T21:52:58.297Z",
+"pro-vigil.com":"2026-04-28T13:15:03.151Z","digicert.com":"2026-07-21T15:23:14.712Z",
+"appomni.com":"2026-05-01T21:22:33.068Z","indigoag.com":"2026-05-27T20:08:06.293Z",
+"getfareye.com":"2026-07-10T19:11:15.600Z","aofl.com":"2026-07-22T22:12:09.674Z",
+"askbio.com":"2026-07-22T18:37:46.442Z","stord.com":"2026-06-30T15:00:00Z",
+"fetch.com":"2026-07-22T16:45:42.555Z","onxmaps.com":"2026-07-22T23:10:40.777Z",
+"lotusflare.com":"2026-07-21T20:34:20.901Z","restaurant365.com":"2026-07-21T21:12:00.279Z",
+"manh.com":"2026-06-26T18:03:30.818Z","team.bumble.com":"2026-07-09T22:49:18.142Z",
+"10xgenomics.com":"2026-07-22T18:44:53.886Z","jdpower.com":"2026-07-14T22:07:23.652Z",
+"wolfram.com":"2026-07-17T13:29:03.902Z","jamcity.com":"2026-07-14T18:20:44.561Z",
+"flyzipline.com":"2026-07-15T21:51:53.662Z","mediakind.com":"2026-07-22T17:55:58.176Z",
+"trintech.com":"2026-07-20T19:28:56.498Z","medecision.com":"2026-07-22T18:44:45.117Z",
+"konghq.com":"2026-07-22T22:21:07.718Z","q2.com":"2026-07-22T21:10:31.743Z",
+"humaninterest.com":"2026-07-22T18:24:20.638Z","availity.com":"2026-07-22T21:53:51.080Z",
+"tradingtechnologies.com":"2026-07-22T16:05:16Z","commandalkon.com":"2026-06-08T21:13:58Z",
+"barracuda.com":"2026-07-08T18:01:18.500Z","cytel.com":"2026-07-22T18:38:16.162Z",
+"arrivelogistics.com":"2026-07-21T21:12:49.724Z","ebsco.com":"2026-07-22T18:42:05.268Z",
+"anuvu.com":"2026-07-22T18:22:59.542Z","uplandsoftware.com":"2026-07-22T14:38:05.468Z",
+"csiweb.com":"2026-07-22T21:36:16.776Z","workiva.com":"2026-07-22T18:37:44.262Z",
+"comscore.com":"2026-07-15T19:32:45.051Z","kraken.com":"2026-07-21T21:06:21.348Z",
+"contentstack.com":"2026-07-17T22:15:04.653Z","marqeta.com":"2026-07-21T20:44:59.727Z",
+"airtable.com":"2026-07-22T22:11:58.963Z","liveperson.com":"2026-07-21T21:22:34.105Z",
+"intralinks.com":"2026-07-22T18:21:22.877Z","avetta.com":"2026-07-21T15:28:25.286Z",
+"taboola.com":"2026-07-21T22:42:57.793Z","pagerduty.com":"2026-07-21T20:16:16.192Z",
+"kentik.com":"2026-07-22T18:39:48.074Z","includedhealth.com":"2026-07-22T18:44:44.582Z",
+"bluecore.com":"2026-05-11T17:39:06.900Z","flywire.com":"2026-07-21T20:43:41.829Z",
+"conversica.com":"2026-07-15T20:51:27.075Z","connectwise.com":"2026-07-01T15:00:00Z",
+"buzzfeed.com":"2026-06-19T17:58:00.833Z"
+};
+
+// 60 day account history rollup, built from a full pull of call activity across the book
+// (both batches, ~1,400 calls over 60 days). Rather than one history line per call, which
+// would bury each account in dozens of "no answer" entries, this is a per contact summary:
+// roughly how many times that contact was dialed in the last 60 days and the general
+// outcome. Counts are approximate (manually reviewed, not machine tallied) since the raw
+// volume is too large to count with certainty by hand. Covers the most active accounts
+// found in the pull; quieter accounts may still be missing 60 day history.
+// [domain, contactName, approxCount, outcomeSummary, rep]
+const ROLLUP_60D = [
+["avetta.com","Brian Wang",16,"mostly no answer, 1 connect (negative)","Ali"],
+["workiva.com","Jonathan Lowe",14,"mostly no answer","Ali"],
+["workiva.com","Charlene Bunting",8,"mostly no answer","Ali"],
+["csiweb.com","Kevin Latta",9,"mix of no answer and short connects","Ali"],
+["csiweb.com","Ted Bechtold",7,"mostly no answer","Ali"],
+["crusoe.ai","several contacts (Corradini, Richardson, Capparelli, Layton)",20,"dialer touches, no connects yet","Ali"],
+["1111systems.com","Julien Anguenot",10,"mix of voicemail and short connects","Ali"],
+["cas.org","Luke Chandler and Matthew Greenwood",15,"mostly no answer and voicemail","Ali"],
+["medecision.com","Catherine W. and Joseph W.",10,"mostly no answer and voicemail","Ali"],
+["dana-farber.org","Shauna Beland and Blake Kaufman",10,"mostly no answer","Ali"],
+["cyderes.com","Pete Stoneberg",8,"mostly no answer","Ali"],
+["nuro.ai","James Yu",5,"1 connect (negative), rest no answer","Ali"],
+["lotusflare.com","June Zhang and Shao Xia",10,"mostly no answer","Ali"],
+["konghq.com","Karen Inman",6,"mostly no answer","Ali"],
+["availity.com","Sean Willison",6,"mostly no answer","Ali"],
+["flywire.com","Jose Luis Salas",6,"mix of no answer and answered/hung up","Ali"],
+["arrivelogistics.com","Chris Cone",8,"mostly no answer","Ali"],
+["tetrascience.com","Ajay Subramanian",3,"no answer","Ali"],
+["affinitiv.com","David Spillers, Richard Beck, Jason Wofford",15,"mostly no answer","Ali"],
+["includedhealth.com","Alejandra Sanmiguel and Kristen Koyanagi",8,"mostly no answer","Ali"]
+];
+
+// Relationship seed: people we've had a real connect or meeting with, so far.
+const RELATIONSHIP_SEED = [
+  ["Josh Casto","tradingtechnologies.com","meeting","JP","Two meetings booked this week."],
+  ["Cam Thomas","myhomey.ai","meeting","JP","New prospect, two meetings booked this week."],
+  ["James Yu","nuro.ai","call","Ali","Connected but asked to be taken off the call list, not interested right now."],
+  ["Anand Iyer","airtable.com","call","Ali","Answered and hung up. Worth a re-touch."],
+  ["Ananthram P S",null,"call","Ali","Warm, evaluating spot instance management. Sent a comparison, waiting on his follow up."],
+  ["Brian Wang","avetta.com","call","Ali","Connected, currently focused on token spend, not cloud commitments. Not interested right now."]
+];
+
+function domainId(domain){
+  const a = accounts.find(x=>x.domain===domain);
+  return a ? a.id : null;
+}
+
+function buildWeekAndOutreachSeed(){
+  const wk = WEEK_STAT_SEED.weekKey;
+  const existing = weekly[wk];
+  const w = emptyWeek();
+  if(existing){ w.notes = existing.notes||""; w.targets = existing.targets||{JP:[],Ali:[]}; }
+  w.calls = WEEK_STAT_SEED.calls; w.emails = WEEK_STAT_SEED.emails; w.linkedin = WEEK_STAT_SEED.linkedin;
+  w.meetings = WEEK_STAT_SEED.meetings; w.opens = WEEK_STAT_SEED.opens; w.replies = WEEK_STAT_SEED.replies;
+  w.lastSynced = new Date().toISOString();
+  w.meetingsLog = MEETING_SEED.map(([domain,who,when,rep])=>({id:cryptoId(),acctId:domainId(domain),who,when,rep}));
+  w.contactsConnected = CONNECTED_SEED.map(([domain,who,rep,note])=>({id:cryptoId(),acctId:domain?domainId(domain):null,who,rep,note}));
+  weekly[wk] = w;
+
+  outreach = TOUCH_SEED.map(([domain,type,date])=>({id:cryptoId(),acctId:domainId(domain),type,rep:"JP",note:"",date}));
+}
+
+function applyHistoryAndRelationshipSeed(){
+  // Apply authoritative last-contacted dates from HubSpot to every account, whether
+  // freshly seeded or already loaded from storage.
+  accounts.forEach(a=>{
+    if(LAST_CONTACTED_SEED[a.domain]) a.lastContacted = LAST_CONTACTED_SEED[a.domain];
+    // Only set PE firm automatically the first time; never overwrite a manual edit.
+    if(PE_FIRM_SEED[a.domain] && !a.peFirm) a.peFirm = PE_FIRM_SEED[a.domain];
+    if(a.top25===undefined) a.top25 = false;
+    // One-time migration: Top 25 used to live inside the Group field, which meant it
+    // couldn't be combined with an actual numbered group. Split it into its own flag.
+    if((a.group||"").trim()==="Top 25"){ a.top25 = true; a.group = ""; }
+    // Backfill verified HubSpot IDs/titles onto existing contacts (covers accounts already
+    // loaded from storage before this contact ID pull existed).
+    a.contacts.forEach(c=>{
+      const verified = CONTACT_ID_SEED[a.domain+"|"+c.name.toLowerCase()];
+      if(verified && !c.hubspotId){ c.hubspotId = verified.id; c.role = verified.title; }
+    });
+    // Add deal contacts if not already on file (matched by name, case-insensitive).
+    // Use the verified HubSpot title and ID where we have one confirmed.
+    DEAL_CONTACTS_SEED.forEach(([domain,name,role])=>{
+      if(domain!==a.domain) return;
+      if(!a.contacts.some(c=>c.name.toLowerCase()===name.toLowerCase())){
+        const verified = CONTACT_ID_SEED[domain+"|"+name.toLowerCase()];
+        a.contacts.push({id:cryptoId(),name,role:verified?verified.title:role,hubspotId:verified?verified.id:null});
+      }
+    });
+  });
+
+  // Clear anything this seed added previously (tagged seeded:true) so re-running on a
+  // version bump refreshes cleanly instead of duplicating. Manual notes are untouched
+  // since they're never tagged.
+  accounts.forEach(a=>{ a.history = a.history.filter(h=>!h.seeded); });
+
+  const now = new Date().toISOString();
+  CALLS_WEEK_DETAIL.forEach(([who,domain,rep,outcome])=>{
+    if(!domain) return;
+    const a = accounts.find(x=>x.domain===domain); if(!a) return;
+    a.history.push({id:cryptoId(),type:"call",text:who+" — "+outcome+" ("+rep+")",when:now,seeded:true});
+  });
+  EMAILS_WEEK_DETAIL.forEach(([subject,domain,rep])=>{
+    if(!domain) return;
+    const a = accounts.find(x=>x.domain===domain); if(!a) return;
+    a.history.push({id:cryptoId(),type:"email",text:subject+" ("+rep+")",when:now,seeded:true});
+  });
+  CONNECTED_SEED.forEach(([domain,who,rep,note])=>{
+    if(!domain) return;
+    const a = accounts.find(x=>x.domain===domain); if(!a) return;
+    a.history.push({id:cryptoId(),type:"call",text:who+" — "+note+" ("+rep+")",when:now,seeded:true});
+  });
+  MEETING_SEED.forEach(([domain,who,when,rep])=>{
+    const a = accounts.find(x=>x.domain===domain); if(!a) return;
+    a.history.push({id:cryptoId(),type:"meeting",text:who+" — "+when+" ("+rep+")",when:now,seeded:true});
+  });
+  ROLLUP_60D.forEach(([domain,who,count,summary,rep])=>{
+    const a = accounts.find(x=>x.domain===domain); if(!a) return;
+    // These are 60 day aggregates without a precise last touch date, so use a mid window
+    // estimate rather than "today" so the account's staleness ring isn't falsely fresh.
+    a.history.push({id:cryptoId(),type:"call",text:"Last 60 days: ~"+count+" calls with "+who+", "+summary+" ("+rep+")",when:new Date(Date.now()-20*86400000).toISOString(),seeded:true});
+  });
+  DEALS_SEED.forEach(([domain,dealId,dealName,stageId,amount,closeDate,nextStep])=>{
+    const a = accounts.find(x=>x.domain===domain); if(!a) return;
+    const stageLabel = STAGE_LABELS[stageId] || stageId;
+    const amountText = amount? " · $"+Number(amount).toLocaleString()+"/mo":"";
+    a.history.push({id:cryptoId(),type:"deal",text:dealName+" — "+stageLabel+amountText+" · closes "+closeDate+". "+nextStep,when:new Date(Date.now()-5*86400000).toISOString(),seeded:true,dealId});
+  });
+
+  // Consistency guarantee: if HubSpot says an account was contacted on a given date but
+  // none of the sources above produced a history entry, add a baseline one so the ring and
+  // the history feed can never contradict each other again.
+  accounts.forEach(a=>{
+    if(a.lastContacted && a.history.filter(h=>h.seeded).length===0){
+      a.history.push({id:cryptoId(),type:"note",text:"HubSpot shows this account was last contacted on this date, but the specific activity (call/email/meeting detail) hasn't been pulled into this console yet.",when:a.lastContacted,seeded:true});
+    }
+  });
+
+  // Same idea for relationships: drop previously seeded ones, keep anything JP or Ali added by hand.
+  relationships = relationships.filter(r=>!r.seeded);
+  RELATIONSHIP_SEED.forEach(([name,domain,type,rep,note])=>{
+    relationships.push({id:cryptoId(),name,acctId:domain?domainId(domain):null,type,rep,note,when:new Date().toISOString(),seeded:true});
+  });
+}
+
+/* ================= REMOTE STORAGE (Google Sheet + Apps Script backend) ================= */
+const ENDPOINT_KEY = "jpali_console_endpoint_url";
+function getEndpoint(){ return localStorage.getItem(ENDPOINT_KEY) || ""; }
+function setEndpointUrl(url){ localStorage.setItem(ENDPOINT_KEY, url.trim()); }
+
+const storage = {
+  async get(key){
+    const endpoint = getEndpoint();
+    if(!endpoint) throw new Error("No data store connected yet");
+    const res = await fetch(endpoint + "?action=get&key=" + encodeURIComponent(key));
+    if(!res.ok) throw new Error("Store request failed ("+res.status+")");
+    const data = await res.json();
+    if(!data || data.value===undefined || data.value===null || data.value==="") return null;
+    return {key, value:data.value};
+  },
+  async set(key, value){
+    const endpoint = getEndpoint();
+    if(!endpoint) throw new Error("No data store connected yet");
+    const res = await fetch(endpoint, {method:"POST", body: JSON.stringify({action:"set", key, value})});
+    if(!res.ok) throw new Error("Store request failed ("+res.status+")");
+    const data = await res.json();
+    return {key, value:data.value};
+  }
+};
+
+async function testEndpoint(url){
+  const res = await fetch(url + "?action=get&key=__connection_test__");
+  if(!res.ok) throw new Error("Got HTTP "+res.status+" from that URL");
+  await res.json(); // throws if not valid JSON, meaning it's probably not an Apps Script Web app
+}
+
+document.getElementById("setupConnectBtn").addEventListener("click", async ()=>{
+  const url = document.getElementById("setupUrlInput").value.trim();
+  const status = document.getElementById("setupStatus");
+  if(!url){ status.textContent = "Paste the Web app URL first."; status.style.color = "var(--danger)"; return; }
+  status.textContent = "Checking connection..."; status.style.color = "var(--muted)";
+  try{
+    await testEndpoint(url);
+    setEndpointUrl(url);
+    status.textContent = "Connected. Loading...";
+    status.style.color = "var(--accent)";
+    location.reload();
+  }catch(err){
+    status.textContent = "Couldn't connect: "+err.message+". Double check the deployment is set to \"Anyone\" access.";
+    status.style.color = "var(--danger)";
+  }
+});
+
+/* ================= STATE ================= */
+let accounts = [];
+let weekly = {};   // { "YYYY-MM-DD" (monday) : {calls,emails,linkedin,meetings,opens,replies,targets:{JP:[],Ali:[]},meetingsLog:[],contactsConnected:[],notes:""} }
+let outreach = []; // { id, acctId, type, rep, note, date }
+let relationships = []; // { id, name, acctId, type, rep, note, when }
+let currentWeekKey = "";
+let activePanelAcctId = null;
+
+function mondayOf(d){
+  const dt = new Date(d);
+  const day = dt.getDay(); // 0 sun .. 6 sat
+  const diff = (day===0? -6 : 1-day);
+  dt.setDate(dt.getDate()+diff);
+  dt.setHours(0,0,0,0);
+  return dt;
+}
+function fmtDate(d){return d.toISOString().slice(0,10);}
+function fmtLabel(d){return d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});}
+
+function emptyWeek(){
+  return {calls:0,emails:0,linkedin:0,meetings:0,opens:0,replies:0,targets:{JP:[],Ali:[]},meetingsLog:[],contactsConnected:[],notes:""};
+}
+
+/* ================= STORAGE ================= */
+async function loadAll(){
+  try{
+    const a = await storage.get("accounts_v1");
+    accounts = a ? JSON.parse(a.value) : applyKnownContext(seedAccounts());
+  }catch(e){ accounts = applyKnownContext(seedAccounts()); }
+
+  let weeklyExisted = true;
+  try{
+    const w = await storage.get("weekly_v1");
+    if(w){ weekly = JSON.parse(w.value); } else { weekly = {}; weeklyExisted = false; }
+  }catch(e){ weekly = {}; weeklyExisted = false; }
+
+  try{
+    const o = await storage.get("outreach_log_v1");
+    outreach = o ? JSON.parse(o.value) : [];
+  }catch(e){ outreach = []; }
+
+  try{
+    const r = await storage.get("relationships_v1");
+    relationships = r ? JSON.parse(r.value) : [];
+  }catch(e){ relationships = []; }
+
+  // Bump this whenever seed data (accounts, weekly stats, history, relationships) changes,
+  // so a browser that already loaded an older copy still picks up the refresh.
+  const SEED_VERSION = "v10";
+  let seedVersion = null;
+  try{
+    const sv = await storage.get("seed_version");
+    seedVersion = sv ? sv.value : null;
+  }catch(e){ seedVersion = null; }
+
+  if(seedVersion !== SEED_VERSION){
+    buildWeekAndOutreachSeed();
+    applyHistoryAndRelationshipSeed();
+    await saveWeekly();
+    await saveOutreach();
+    await saveAccounts();
+    await saveRelationships();
+    try{ await storage.set("seed_version", SEED_VERSION); }catch(e){}
+  }
+
+  if(!a_hasSaved) await saveAccounts(); // seed on first ever load
+}
+let a_hasSaved = false;
+
+async function saveAccounts(){
+  try{ await storage.set("accounts_v1", JSON.stringify(accounts)); a_hasSaved=true; }catch(e){console.error(e);}
+}
+async function saveWeekly(){
+  try{ await storage.set("weekly_v1", JSON.stringify(weekly)); }catch(e){console.error(e);}
+}
+async function saveOutreach(){
+  try{ await storage.set("outreach_log_v1", JSON.stringify(outreach)); }catch(e){console.error(e);}
+}
+async function saveRelationships(){
+  try{ await storage.set("relationships_v1", JSON.stringify(relationships)); }catch(e){console.error(e);}
+}
+
+/* ================= TABS ================= */
+document.querySelectorAll(".tab").forEach(t=>{
+  t.addEventListener("click",()=>{
+    if(typeof flushPendingSaves==="function") flushPendingSaves();
+    document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));
+    document.querySelectorAll(".view").forEach(x=>x.classList.remove("active"));
+    t.classList.add("active");
+    document.getElementById("view-"+t.dataset.view).classList.add("active");
+    if(t.dataset.view==="outreach") renderOutreach();
+    if(t.dataset.view==="accounts") renderAccounts();
+    if(t.dataset.view==="relationships") renderRelationships();
+  });
+});
+
+/* ================= WEEK NAV ================= */
+function currentWeek(){
+  if(!weekly[currentWeekKey]) weekly[currentWeekKey] = emptyWeek();
+  return weekly[currentWeekKey];
+}
+
+function renderWeekHeader(){
+  const d = new Date(currentWeekKey);
+  const fri = new Date(d); fri.setDate(d.getDate()+4);
+  document.getElementById("wkLabel").innerHTML = "Week of "+fmtLabel(d)+"<span>"+fmtLabel(d)+" through "+fmtLabel(fri)+"</span>";
+}
+
+function renderStats(){
+  const w = currentWeek();
+  statCalls.textContent=w.calls; statEmails.textContent=w.emails; statLinkedin.textContent=w.linkedin;
+  statMeetings.textContent=w.meetings; statOpens.textContent=w.opens; statReplies.textContent=w.replies;
+  weekNotes.value=w.notes||"";
+  const sync = document.getElementById("syncLine");
+  sync.textContent = "Calls, emails, LinkedIn messages, opens, replies, meetings, and contacts connected are pulled from HubSpot. Last synced: "+(w.lastSynced? new Date(w.lastSynced).toLocaleString() : "never yet, ask Claude to refresh")+".";
+}
+let notesTimer;
+document.getElementById("weekNotes").addEventListener("input",e=>{
+  currentWeek().notes = e.target.value;
+  clearTimeout(notesTimer);
+  notesTimer = setTimeout(saveWeekly, 500);
+});
+document.getElementById("weekNotes").addEventListener("blur",()=>{ clearTimeout(notesTimer); saveWeekly(); });
+
+document.getElementById("wkPrev").addEventListener("click",()=>{
+  const d = new Date(currentWeekKey); d.setDate(d.getDate()-7);
+  currentWeekKey = fmtDate(d); renderPulse();
+});
+document.getElementById("wkNext").addEventListener("click",()=>{
+  const d = new Date(currentWeekKey); d.setDate(d.getDate()+7);
+  currentWeekKey = fmtDate(d); renderPulse();
+});
+document.getElementById("wkToday").addEventListener("click",()=>{
+  currentWeekKey = fmtDate(mondayOf(new Date())); renderPulse();
+});
+
+/* ================= TARGETS ================= */
+function fillAccountSelect(sel, placeholder){
+  sel.innerHTML = (placeholder? "<option value=''>"+placeholder+"</option>" : "") +
+    accounts.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>"<option value='"+a.id+"'>"+a.name+"</option>").join("");
+}
+
+function renderTargetsFor(rep){
+  const w = currentWeek();
+  if(!w.targets) w.targets = {JP:[],Ali:[]};
+  if(!w.targets[rep]) w.targets[rep] = [];
+  fillAccountSelect(document.getElementById("targetPicker"+rep),"Or pick from the list…");
+  populateAcctDatalist();
+  const wrap = document.getElementById("targetChips"+rep);
+  if(w.targets[rep].length===0){ wrap.innerHTML = "<span style='color:var(--muted);font-size:13px;'>No target accounts set for this week yet.</span>"; return; }
+  wrap.innerHTML = w.targets[rep].map(id=>{
+    const a = accounts.find(x=>x.id===id);
+    if(!a) return "";
+    return "<div class='chip'>"+a.name+" <button data-id='"+id+"' class='rm-target-"+rep+"'>&times;</button></div>";
+  }).join("");
+  wrap.querySelectorAll(".rm-target-"+rep).forEach(b=>b.addEventListener("click",()=>{
+    const w = currentWeek();
+    w.targets[rep] = w.targets[rep].filter(id=>id!==b.dataset.id);
+    saveWeekly(); renderTargetsFor(rep);
+  }));
+}
+function populateAcctDatalist(){
+  const dl = document.getElementById("acctDatalist");
+  if(dl.childElementCount>0) return;
+  dl.innerHTML = accounts.slice().sort((a,b)=>a.name.localeCompare(b.name)).map(a=>"<option value='"+a.name+"'>").join("");
+}
+function renderTargets(){ renderTargetsFor("JP"); renderTargetsFor("Ali"); }
+function addTargetByName(rep){
+  const nameInput = document.getElementById("targetSearch"+rep);
+  const name = nameInput.value.trim();
+  const w = currentWeek();
+  if(!w.targets) w.targets = {JP:[],Ali:[]};
+  if(name){
+    const a = accounts.find(x=>x.name.toLowerCase()===name.toLowerCase());
+    if(a){
+      if(!w.targets[rep].includes(a.id)) w.targets[rep].push(a.id);
+      nameInput.value="";
+      saveWeekly(); renderTargetsFor(rep);
+      return;
+    }
+  }
+  const val = document.getElementById("targetPicker"+rep).value;
+  if(val){
+    if(!w.targets[rep].includes(val)) w.targets[rep].push(val);
+    saveWeekly(); renderTargetsFor(rep);
+  }
+}
+["JP","Ali"].forEach(rep=>{
+  document.getElementById("addTarget"+rep).addEventListener("click",()=>addTargetByName(rep));
+  document.getElementById("targetSearch"+rep).addEventListener("keydown",e=>{
+    if(e.key==="Enter"){ e.preventDefault(); addTargetByName(rep); }
+  });
+});
+
+/* ================= MEETINGS / CONTACTS CONNECTED (synced from HubSpot) ================= */
+function renderMeetingList(){
+  const w = currentWeek();
+  const list = document.getElementById("meetingList");
+  if(!w.meetingsLog || w.meetingsLog.length===0){ list.innerHTML="<div class='empty'>No meetings synced yet this week. Ask Claude to refresh from HubSpot.</div>"; return; }
+  list.innerHTML = w.meetingsLog.map(m=>{
+    const a = accounts.find(x=>x.id===m.acctId);
+    return "<li class='log-item"+(a?" acct-link":"")+"' "+(a?"data-acctid='"+a.id+"'":"")+"><span class='tag meeting'>Meeting</span><div class='body'>"+
+      (a?a.name:"Unknown account")+" — "+m.who+(m.rep? " ("+m.rep+")":"")+"<div class='meta'>"+m.when+"</div></div></li>";
+  }).join("");
+  list.querySelectorAll(".acct-link").forEach(li=>li.addEventListener("click",()=>openPanel(li.dataset.acctid)));
+}
+
+function renderContactsConnected(){
+  const w = currentWeek();
+  const list = document.getElementById("contactsConnectedList");
+  if(!w.contactsConnected || w.contactsConnected.length===0){ list.innerHTML="<div class='empty'>No connected calls synced yet this week. Ask Claude to refresh from HubSpot.</div>"; return; }
+  list.innerHTML = w.contactsConnected.map(c=>{
+    const a = accounts.find(x=>x.id===c.acctId);
+    return "<li class='log-item"+(a?" acct-link":"")+"' "+(a?"data-acctid='"+a.id+"'":"")+"><span class='tag call'>Call</span><div class='body'>"+
+      (a?a.name:"Account not linked yet")+" — "+c.who+(c.rep? " ("+c.rep+")":"")+
+      (c.note? "<div class='rel-note'>"+c.note+"</div>":"")+"</div></li>";
+  }).join("");
+  list.querySelectorAll(".acct-link").forEach(li=>li.addEventListener("click",()=>openPanel(li.dataset.acctid)));
+}
+
+function renderPulse(){
+  renderWeekHeader(); renderStats(); renderTargets(); renderMeetingList(); renderContactsConnected();
+}
+
+/* ================= RELATIONSHIPS ================= */
+function renderRelationships(){
+  fillAccountSelect(document.getElementById("relAcct"),"No account linked");
+  const list = document.getElementById("relList");
+  if(relationships.length===0){ list.innerHTML = "<div class='empty'>No previous contact tracked yet.</div>"; return; }
+  const sorted = relationships.slice().sort((a,b)=>new Date(b.when)-new Date(a.when));
+  list.innerHTML = sorted.map(r=>{
+    const a = accounts.find(x=>x.id===r.acctId);
+    return "<li class='log-item"+(a?" acct-link":"")+"' "+(a?"data-acctid='"+a.id+"'":"")+"><span class='tag "+r.type+"'>"+r.type+"</span>"+
+      "<div class='body'>"+r.name+" — "+(a?a.name:"Account not linked yet")+
+      "<div class='meta'>"+r.rep+"</div>"+(r.note? "<div class='rel-note'>"+r.note+"</div>":"")+"</div>"+
+      "<button class='ghost del' data-id='"+r.id+"'>&times;</button></li>";
+  }).join("");
+  list.querySelectorAll(".acct-link").forEach(li=>li.addEventListener("click",e=>{
+    if(e.target.classList.contains("del")) return;
+    openPanel(li.dataset.acctid);
+  }));
+  list.querySelectorAll(".del").forEach(b=>b.addEventListener("click",e=>{
+    e.stopPropagation();
+    relationships = relationships.filter(r=>r.id!==b.dataset.id);
+    saveRelationships(); renderRelationships();
+  }));
+}
+document.getElementById("addRel").addEventListener("click",()=>{
+  const name = document.getElementById("relName").value.trim();
+  const acctId = document.getElementById("relAcct").value || null;
+  const type = document.getElementById("relType").value;
+  const when = document.getElementById("relWhen").value.trim();
+  const noteText = document.getElementById("relNote").value.trim();
+  if(!name) return;
+  const note = noteText || (when? ("Logged: "+when) : "");
+  relationships.push({id:cryptoId(),name,acctId,type,rep:"JP",note,when:new Date().toISOString()});
+  saveRelationships(); renderRelationships();
+
+  // Auto pull into the linked account's history, since that's the point of tracking it here.
+  if(acctId){
+    const a = accounts.find(x=>x.id===acctId);
+    if(a){
+      a.history.push({id:cryptoId(),type,text:name+(noteText? " — "+noteText : "")+" (JP)"+(when? " · "+when : ""),when:new Date().toISOString()});
+      saveAccounts();
+    }
+  }
+  document.getElementById("relName").value=""; document.getElementById("relWhen").value=""; document.getElementById("relNote").value="";
+});
+
+/* ================= DRILL DOWN ================= */
+function openDetail(title,sub,rows){
+  document.getElementById("dTitle").textContent = title;
+  document.getElementById("dSub").textContent = sub;
+  const body = document.getElementById("dBody");
+  if(rows.length===0){ body.innerHTML = "<div class='empty'>Nothing logged yet.</div>"; }
+  else {
+    body.innerHTML = rows.map(r=>{
+      const a = r.acctId!==undefined ? accounts.find(x=>x.id===r.acctId) : null;
+      return "<div class='detail-row"+(a?" acct-link":"")+"' "+(a?"data-acctid='"+a.id+"'":"")+"><div><div class='who'>"+r.who+"</div>"+
+        "<div class='acct'>"+(a?a.name:"Account not linked")+" · "+r.rep+"</div></div>"+
+        (r.outcome? "<span class='outcome'>"+r.outcome+"</span>":"")+"</div>";
+    }).join("");
+    body.querySelectorAll(".acct-link").forEach(el=>el.addEventListener("click",()=>{
+      document.getElementById("detailOverlay").classList.remove("active");
+      openPanel(el.dataset.acctid);
+    }));
+  }
+  document.getElementById("detailOverlay").classList.add("active");
+}
+document.getElementById("dClose").addEventListener("click",()=>document.getElementById("detailOverlay").classList.remove("active"));
+document.getElementById("detailOverlay").addEventListener("click",e=>{ if(e.target.id==="detailOverlay") e.currentTarget.classList.remove("active"); });
+
+document.getElementById("cardCalls").addEventListener("click",()=>{
+  const rows = CALLS_WEEK_DETAIL.map(([who,domain,rep,outcome])=>({who,acctId:domain?domainId(domain):null,rep,outcome}));
+  openDetail("Calls this week", rows.length+" calls, both reps", rows);
+});
+document.getElementById("cardEmails").addEventListener("click",()=>{
+  const rows = EMAILS_WEEK_DETAIL.map(([subject,domain,rep])=>({who:subject,acctId:domain?domainId(domain):null,rep,outcome:""}));
+  openDetail("Emails this week", rows.length+" email engagements, both reps", rows);
+});
+
+/* ================= ACCOUNTS VIEW ================= */
+const TIER_META = {
+  1:{label:"Tier 1", color:"var(--tier1)"}, 2:{label:"Tier 2", color:"var(--tier2)"},
+  3:{label:"Tier 3", color:"var(--tier3)"}, 4:{label:"Tier 4", color:"var(--tier4)"},
+  0:{label:"Unrated", color:"var(--muted)"}
+};
+
+function touchesInWindow(acctId, days){
+  const cutoff = Date.now() - days*86400000;
+  const a = accounts.find(x=>x.id===acctId);
+  const historyTouches = a ? a.history.filter(h=>["call","email","linkedin","meeting"].includes(h.type) && new Date(h.when).getTime()>=cutoff) : [];
+  const legacyTouches = outreach.filter(t=>t.acctId===acctId && new Date(t.date).getTime()>=cutoff);
+  return [...historyTouches, ...legacyTouches];
+}
+
+function ringSVG(daysSince){
+  // 0-30 day gauge: teal (fresh) -> amber -> red (stale/never)
+  const pct = Math.max(0, Math.min(1, daysSince/30));
+  const color = daysSince===Infinity ? "var(--danger)" : pct<0.4? "var(--accent)" : pct<0.8? "var(--warm)" : "var(--danger)";
+  const circumference = 2*Math.PI*13;
+  const dash = circumference*(1-Math.min(pct,1));
+  return "<svg class='ring' viewBox='0 0 34 34'><circle cx='17' cy='17' r='13' fill='none' stroke='var(--surface2)' stroke-width='4'/>"+
+    "<circle cx='17' cy='17' r='13' fill='none' stroke='"+color+"' stroke-width='4' stroke-linecap='round' "+
+    "stroke-dasharray='"+circumference+"' stroke-dashoffset='"+dash+"' transform='rotate(-90 17 17)'/></svg>";
+}
+
+function daysSinceLastTouch(acctId){
+  const a = accounts.find(x=>x.id===acctId);
+  if(a && a.lastContacted){
+    return Math.floor((Date.now()-new Date(a.lastContacted).getTime())/86400000);
+  }
+  // Fallback for accounts with no HubSpot last-contacted date on file: use whatever
+  // is in this account's own history log instead.
+  const historyDates = a ? a.history.filter(h=>["call","email","linkedin","meeting"].includes(h.type)).map(h=>new Date(h.when).getTime()) : [];
+  const legacyDates = outreach.filter(t=>t.acctId===acctId).map(t=>new Date(t.date).getTime());
+  const allDates = [...historyDates, ...legacyDates];
+  if(allDates.length===0) return Infinity;
+  const latest = Math.max(...allDates);
+  return Math.floor((Date.now()-latest)/86400000);
+}
+
+function renderAccounts(){
+  const q = document.getElementById("acctSearch").value.toLowerCase();
+  const cloudF = document.getElementById("cloudFilter").value;
+  const groupF = document.getElementById("groupFilter").value;
+  const top25F = document.getElementById("top25Filter").checked;
+  const sortVal = document.getElementById("acctSort").value;
+  const filtered = accounts.filter(a=>
+    (a.name.toLowerCase().includes(q) || a.domain.toLowerCase().includes(q)) &&
+    (!cloudF || (cloudF==="Multi-cloud" ? (a.cloud||"").includes(",") : (a.cloud||"").includes(cloudF))) &&
+    (!groupF || (a.group||"").trim()===groupF) &&
+    (!top25F || !!a.top25)
+  );
+
+  const wrap = document.getElementById("tierGroups");
+  wrap.innerHTML = "";
+
+  function cardHTML(a, showTierBadge){
+    const days = daysSinceLastTouch(a.id);
+    const daysLabel = days===Infinity? "no touches logged" : days+" day"+(days===1?"":"s")+" since last touch";
+    const tierMeta = TIER_META[a.tier===undefined?0:a.tier];
+    const isDNC = (a.group||"").trim()==="Do Not Contact";
+    const isTop25 = !!a.top25;
+    return "<div class='acct-card"+(isDNC?" dnc-card":"")+(isTop25?" top25-card":"")+"' data-id='"+a.id+"'>"+
+      (isDNC? "<div class='dnc-banner'>DO NOT CONTACT</div>":"")+
+      (isTop25? "<div class='top25-banner'>TOP 25</div>":"")+
+      "<div class='row1'><div><h4>"+a.name+(showTierBadge? " <span class='tier-dot' style='background:"+tierMeta.color+";display:inline-block;margin-left:4px;'></span>":"")+"</h4>"+
+      "<div class='domain'>"+a.domain+(a.group? " · "+a.group:"")+(a.peFirm? " · "+a.peFirm:"")+"</div></div>"+ringSVG(days)+"</div>"+
+      "<div class='meta-row'><span class='cloud-badge'>"+(a.cloud||"Cloud unknown")+"</span>"+
+      "<span class='spend'>"+(a.spend? "$"+Number(a.spend).toLocaleString():"—")+"</span></div>"+
+      "<div style='color:var(--muted);font-size:11px;margin-top:8px;'>"+daysLabel+"</div>"+
+      "</div>";
+  }
+
+  if(sortVal==="name"){
+    const groups = {1:[],2:[],3:[],4:[],0:[]};
+    filtered.forEach(a=>groups[a.tier===undefined?0:a.tier].push(a));
+    [1,2,3,4,0].forEach(t=>{
+      const list = groups[t].sort((a,b)=>a.name.localeCompare(b.name));
+      if(list.length===0) return;
+      const meta = TIER_META[t];
+      const div = document.createElement("div");
+      div.className="tier-group";
+      div.innerHTML = "<div class='tier-head'><span class='tier-dot' style='background:"+meta.color+"'></span>"+
+        "<h3>"+meta.label+"</h3><span class='count'>"+list.length+" accounts</span></div>"+
+        "<div class='acct-cards'>"+list.map(a=>cardHTML(a,false)).join("")+"</div>";
+      wrap.appendChild(div);
+    });
+  } else {
+    const sortLabels = {recent:"most recent outreach first", oldest:"oldest outreach first", spendHigh:"highest cloud spend first", spendLow:"lowest cloud spend first", pe:"PE firm, A to Z"};
+    const list = filtered.slice().sort((a,b)=>{
+      if(sortVal==="recent") return daysSinceLastTouch(a.id)-daysSinceLastTouch(b.id);
+      if(sortVal==="oldest"){
+        const da=daysSinceLastTouch(a.id), db=daysSinceLastTouch(b.id);
+        if(da===Infinity && db===Infinity) return 0;
+        if(da===Infinity) return -1;
+        if(db===Infinity) return 1;
+        return db-da;
+      }
+      if(sortVal==="spendHigh") return (b.spend||0)-(a.spend||0);
+      if(sortVal==="spendLow") return (a.spend||0)-(b.spend||0);
+      if(sortVal==="pe") return (a.peFirm||"zzz").localeCompare(b.peFirm||"zzz");
+      return 0;
+    });
+    const div = document.createElement("div");
+    div.className="tier-group";
+    div.innerHTML = "<div class='tier-head'><h3>All accounts</h3><span class='count'>"+list.length+" accounts, sorted by "+sortLabels[sortVal]+"</span></div>"+
+      "<div class='acct-cards'>"+list.map(a=>cardHTML(a,true)).join("")+"</div>";
+    wrap.appendChild(div);
+  }
+
+  if(filtered.length===0) wrap.innerHTML = "<div class='empty'>No accounts match that search.</div>";
+
+  wrap.querySelectorAll(".acct-card").forEach(c=>c.addEventListener("click",()=>openPanel(c.dataset.id)));
+}
+document.getElementById("acctSearch").addEventListener("input", renderAccounts);
+document.getElementById("cloudFilter").addEventListener("change", renderAccounts);
+document.getElementById("groupFilter").addEventListener("change", renderAccounts);
+document.getElementById("top25Filter").addEventListener("change", renderAccounts);
+document.getElementById("acctSort").addEventListener("change", renderAccounts);
+
+/* ================= ACCOUNT DETAIL PANEL ================= */
+function openPanel(id){
+  activePanelAcctId = id;
+  const a = accounts.find(x=>x.id===id);
+  if(!a) return;
+  document.getElementById("pName").textContent = a.name;
+  document.getElementById("pDomain").textContent = a.domain;
+  const hsLink = document.getElementById("pHubspotLink");
+  const hsUrl = hubspotCompanyUrl(a.domain);
+  if(hsUrl){ hsLink.href = hsUrl; hsLink.style.display = "inline-block"; } else { hsLink.style.display = "none"; }
+  document.getElementById("pDncWarning").style.display = (a.group||"").trim()==="Do Not Contact" ? "block" : "none";
+  document.getElementById("pTop25Badge").style.display = a.top25 ? "block" : "none";
+  document.getElementById("pTop25Check").checked = !!a.top25;
+  document.getElementById("pTier").value = a.tier||0;
+  document.getElementById("pGroup").value = a.group||"";
+  document.getElementById("pPeFirm").value = a.peFirm||"";
+  document.getElementById("pCloud").value = a.cloud||"";
+  document.getElementById("pSpend").value = a.spend||"";
+  migrateLegacyNoteField(a, "relevantNotes", "relevantNotesItems");
+  migrateLegacyNoteField(a, "hypothesis", "hypothesisItems");
+  migrateLegacyNoteField(a, "angles", "anglesItems");
+  renderNoteItems(a, "relevantNotesItems", "pRelevantNotesList");
+  renderNoteItems(a, "hypothesisItems", "pHypothesisList");
+  renderNoteItems(a, "anglesItems", "pAnglesList");
+  const touches = touchesInWindow(id,60);
+  document.getElementById("pOutreachCount").textContent = touches.length+" touch"+(touches.length===1?"":"es")+" in 60 days";
+  renderContacts(a);
+  renderHistory(a);
+  document.getElementById("overlay").classList.add("active");
+}
+async function flushPendingSaves(){
+  clearTimeout(notesTimer); clearTimeout(groupTimer); clearTimeout(peFirmTimer);
+  await saveAccounts(); await saveWeekly();
+}
+document.getElementById("pClose").addEventListener("click",()=>{ flushPendingSaves(); document.getElementById("overlay").classList.remove("active"); });
+document.getElementById("overlay").addEventListener("click",e=>{ if(e.target.id==="overlay"){ flushPendingSaves(); e.currentTarget.classList.remove("active"); } });
+
+document.getElementById("pTier").addEventListener("change",e=>{
+  const a = accounts.find(x=>x.id===activePanelAcctId); if(!a) return;
+  a.tier = parseInt(e.target.value,10); saveAccounts();
+});
+let groupTimer;
+document.getElementById("pGroup").addEventListener("change",e=>{
+  const a = accounts.find(x=>x.id===activePanelAcctId); if(!a) return;
+  a.group = e.target.value;
+  document.getElementById("pDncWarning").style.display = e.target.value==="Do Not Contact" ? "block" : "none";
+  saveAccounts(); renderAccounts();
+});
+document.getElementById("pTop25Check").addEventListener("change",e=>{
+  const a = accounts.find(x=>x.id===activePanelAcctId); if(!a) return;
+  a.top25 = e.target.checked;
+  document.getElementById("pTop25Badge").style.display = e.target.checked ? "block" : "none";
+  saveAccounts(); renderAccounts();
+});
+let peFirmTimer;
+document.getElementById("pPeFirm").addEventListener("input",e=>{
+  const a = accounts.find(x=>x.id===activePanelAcctId); if(!a) return;
+  a.peFirm = e.target.value;
+  clearTimeout(peFirmTimer); peFirmTimer = setTimeout(()=>{ saveAccounts(); renderAccounts(); }, 500);
+});
+document.getElementById("pPeFirm").addEventListener("blur",()=>{ clearTimeout(peFirmTimer); saveAccounts(); renderAccounts(); });
+document.getElementById("pCloud").addEventListener("input",e=>{
+  const a = accounts.find(x=>x.id===activePanelAcctId); if(!a) return;
+  a.cloud = e.target.value; saveAccounts();
+});
+document.getElementById("pSpend").addEventListener("input",e=>{
+  const a = accounts.find(x=>x.id===activePanelAcctId); if(!a) return;
+  a.spend = parseFloat(e.target.value||0); saveAccounts();
+});
+function migrateLegacyNoteField(a, legacyField, itemsField){
+  if(!a[itemsField]) a[itemsField] = [];
+  if(a[legacyField] && a[legacyField].trim() && a[itemsField].length===0){
+    a[itemsField].push({id:cryptoId(), text:a[legacyField].trim()});
+    a[legacyField] = "";
+    saveAccounts();
+  }
+}
+
+function renderNoteItems(a, field, listId){
+  const list = document.getElementById(listId);
+  const items = a[field] || [];
+  if(items.length===0){ list.innerHTML = "<div class='empty'>Nothing added yet.</div>"; return; }
+  list.innerHTML = items.map(it=>"<div class='note-item' draggable='true' data-id='"+it.id+"'>"+
+    "<span class='drag-handle' title='Drag to reorder'>&#8942;&#8942;</span>"+
+    "<div class='note-text' data-id='"+it.id+"'>"+it.text.replace(/</g,"&lt;")+"</div>"+
+    "<button class='ghost del-note' data-id='"+it.id+"'>&times;</button></div>").join("");
+
+  list.querySelectorAll(".note-text").forEach(el=>{
+    el.addEventListener("click",()=>{
+      if(el.isContentEditable) return;
+      el.contentEditable = "true"; el.focus();
+    });
+    el.addEventListener("blur",()=>{
+      el.contentEditable = "false";
+      const acc = accounts.find(x=>x.id===activePanelAcctId); if(!acc) return;
+      const item = (acc[field]||[]).find(i=>i.id===el.dataset.id);
+      if(item){ item.text = el.textContent.trim(); saveAccounts(); }
+    });
+  });
+  list.querySelectorAll(".del-note").forEach(b=>{
+    b.addEventListener("click",()=>{
+      const acc = accounts.find(x=>x.id===activePanelAcctId); if(!acc) return;
+      acc[field] = (acc[field]||[]).filter(i=>i.id!==b.dataset.id);
+      saveAccounts(); renderNoteItems(acc, field, listId);
+    });
+  });
+  let dragId = null;
+  list.querySelectorAll(".note-item").forEach(el=>{
+    el.addEventListener("dragstart",()=>{ dragId = el.dataset.id; el.classList.add("dragging"); });
+    el.addEventListener("dragend",()=>{ el.classList.remove("dragging"); });
+    el.addEventListener("dragover",e=>{ e.preventDefault(); });
+    el.addEventListener("drop",e=>{
+      e.preventDefault();
+      if(!dragId || dragId===el.dataset.id) return;
+      const acc = accounts.find(x=>x.id===activePanelAcctId); if(!acc) return;
+      const arr = acc[field];
+      const fromIdx = arr.findIndex(i=>i.id===dragId);
+      const toIdx = arr.findIndex(i=>i.id===el.dataset.id);
+      if(fromIdx<0||toIdx<0) return;
+      const [moved] = arr.splice(fromIdx,1);
+      arr.splice(toIdx,0,moved);
+      saveAccounts(); renderNoteItems(acc, field, listId);
+    });
+  });
+}
+
+function addNoteItem(field, inputId, listId){
+  const input = document.getElementById(inputId);
+  const text = input.value.trim();
+  if(!text) return;
+  const a = accounts.find(x=>x.id===activePanelAcctId); if(!a) return;
+  if(!a[field]) a[field] = [];
+  a[field].unshift({id:cryptoId(), text});
+  input.value = "";
+  saveAccounts();
+  renderNoteItems(a, field, listId);
+}
+
+[["pRelevantNotesInput","addRelevantNote","relevantNotesItems","pRelevantNotesList"],
+ ["pHypothesisInput","addHypothesisNote","hypothesisItems","pHypothesisList"],
+ ["pAnglesInput","addAnglesNote","anglesItems","pAnglesList"]
+].forEach(([inputId,btnId,field,listId])=>{
+  document.getElementById(btnId).addEventListener("click",()=>addNoteItem(field,inputId,listId));
+  document.getElementById(inputId).addEventListener("keydown",e=>{
+    if(e.key==="Enter"){ e.preventDefault(); addNoteItem(field,inputId,listId); }
+  });
+});
+
+
+function renderContacts(a){
+  const wrap = document.getElementById("pContacts");
+  if(a.contacts.length===0){ wrap.innerHTML = "<span style='color:var(--muted);font-size:13px;'>No decision makers logged yet.</span>"; return; }
+  wrap.innerHTML = a.contacts.map(c=>{
+    const label = c.name+(c.role? " · "+c.role:"");
+    const link = c.hubspotId? hubspotContactUrl(c.hubspotId) : null;
+    const nameEl = link? "<a href='"+link+"' target='_blank' rel='noopener' style='color:inherit;text-decoration:none;'>"+label+" ↗</a>" : label;
+    return "<div class='chip'>"+nameEl+" <button data-id='"+c.id+"' class='rm-contact'>&times;</button></div>";
+  }).join("");
+  wrap.querySelectorAll(".rm-contact").forEach(b=>b.addEventListener("click",()=>{
+    a.contacts = a.contacts.filter(c=>c.id!==b.dataset.id);
+    saveAccounts(); renderContacts(a);
+  }));
+}
+document.getElementById("pAddContact").addEventListener("click",()=>{
+  const a = accounts.find(x=>x.id===activePanelAcctId); if(!a) return;
+  const name = document.getElementById("pContactName").value.trim();
+  const role = document.getElementById("pContactRole").value.trim();
+  if(!name) return;
+  a.contacts.push({id:cryptoId(),name,role});
+  document.getElementById("pContactName").value=""; document.getElementById("pContactRole").value="";
+  saveAccounts(); renderContacts(a);
+});
+
+function renderHistory(a){
+  const list = document.getElementById("pHistory");
+  if(a.history.length===0){ list.innerHTML = "<div class='empty'>No history yet. Log the first touch below.</div>"; return; }
+  const sorted = a.history.slice().sort((x,y)=>new Date(y.when)-new Date(x.when));
+  list.innerHTML = sorted.map(h=>{
+    const link = h.type==="deal" && h.dealId ? hubspotDealUrl(h.dealId) : null;
+    const body = link? "<a href='"+link+"' target='_blank' rel='noopener' style='color:inherit;'>"+h.text+" ↗</a>" : h.text;
+    return "<li class='log-item'><span class='tag "+h.type+"'>"+h.type+"</span>"+
+    "<div class='body'>"+body+"<div class='meta'>"+new Date(h.when).toLocaleDateString()+"</div></div>"+
+    "<button class='ghost del' data-id='"+h.id+"'>&times;</button></li>";
+  }).join("");
+  list.querySelectorAll(".del").forEach(b=>b.addEventListener("click",()=>{
+    a.history = a.history.filter(h=>h.id!==b.dataset.id);
+    saveAccounts(); renderHistory(a);
+  }));
+}
+document.getElementById("pSaveBtn").addEventListener("click", async ()=>{
+  const btn = document.getElementById("pSaveBtn");
+  const status = document.getElementById("pSaveStatus");
+  btn.disabled = true; btn.textContent = "Saving…";
+  try{
+    const a = accounts.find(x=>x.id===activePanelAcctId);
+    const result = a ? await storage.set("accounts_v1", JSON.stringify(accounts)) : null;
+    await flushPendingSaves();
+    if(result || !a){
+      status.textContent = "Saved just now, "+new Date().toLocaleTimeString();
+      status.classList.add("show");
+    } else {
+      status.textContent = "Save may have failed, try again";
+      status.style.color = "var(--danger)";
+      status.classList.add("show");
+    }
+  }catch(err){
+    status.textContent = "Save failed: "+err.message;
+    status.style.color = "var(--danger)";
+    status.classList.add("show");
+  }
+  btn.disabled = false; btn.textContent = "Save";
+});
+document.getElementById("pAddHistory").addEventListener("click",()=>{
+  const a = accounts.find(x=>x.id===activePanelAcctId); if(!a) return;
+  const text = document.getElementById("pHistText").value.trim();
+  if(!text) return;
+  a.history.push({id:cryptoId(),type:"note",text,when:new Date().toISOString()});
+  document.getElementById("pHistText").value="";
+  saveAccounts(); renderHistory(a);
+});
+
+/* ================= OUTREACH MAP ================= */
+function logOutreach(acctId,type,rep,note){
+  outreach.push({id:cryptoId(),acctId,type,rep,note,date:new Date().toISOString()});
+  saveOutreach();
+}
+function renderOutreach(){
+  const cutoff = Date.now()-60*86400000;
+  const recent = outreach.filter(t=>new Date(t.date).getTime()>=cutoff);
+  const byAcct = {};
+  recent.forEach(t=>{
+    byAcct[t.acctId] = byAcct[t.acctId] || {call:0,email:0,linkedin:0};
+    byAcct[t.acctId][t.type] = (byAcct[t.acctId][t.type]||0)+1;
+  });
+  const rows = Object.entries(byAcct).map(([id,c])=>({id,...c,total:c.call+c.email+c.linkedin}))
+    .sort((a,b)=>b.total-a.total);
+
+  const wrap = document.getElementById("outreachBars");
+  if(rows.length===0){
+    wrap.innerHTML = "<div class='empty'>No touches synced from HubSpot yet for the last 60 days. Ask Claude to refresh the console and this will fill in.</div>";
+    return;
+  }
+  const max = Math.max(...rows.map(r=>r.total),1);
+  wrap.innerHTML = rows.map(r=>{
+    const a = accounts.find(x=>x.id===r.id);
+    const w = (v)=> (v/max*100)+"%";
+    return "<div class='bar-row'><div class='name'>"+(a?a.name:"Unknown")+"</div>"+
+      "<div class='bar-track'>"+
+      (r.call? "<div class='bar-seg' style='width:"+w(r.call)+";background:var(--tier2)'></div>":"")+
+      (r.email? "<div class='bar-seg' style='width:"+w(r.email)+";background:var(--tier1)'></div>":"")+
+      (r.linkedin? "<div class='bar-seg' style='width:"+w(r.linkedin)+";background:var(--tier3)'></div>":"")+
+      "</div><div class='total'>"+r.total+"</div></div>";
+  }).join("");
+}
+/* ================= BACKUP / RESTORE ================= */
+document.getElementById("backupBtn").addEventListener("click",()=>{
+  const backup = {
+    exportedAt: new Date().toISOString(),
+    accounts, weekly, outreach, relationships
+  };
+  const blob = new Blob([JSON.stringify(backup,null,2)], {type:"application/json"});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = "jp-ali-prospecting-collab-backup-"+new Date().toISOString().slice(0,10)+".json";
+  document.body.appendChild(a); a.click(); document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+});
+document.getElementById("restoreInput").addEventListener("change",e=>{
+  const file = e.target.files[0];
+  if(!file) return;
+  const reader = new FileReader();
+  reader.onload = async ()=>{
+    try{
+      const data = JSON.parse(reader.result);
+      if(!confirm("This will replace everything currently in the console (accounts, weekly data, outreach, previous contact) with the backup from "+(data.exportedAt||"an unknown date")+". Continue?")) return;
+      accounts = data.accounts||accounts;
+      weekly = data.weekly||weekly;
+      outreach = data.outreach||outreach;
+      relationships = data.relationships||relationships;
+      await saveAccounts(); await saveWeekly(); await saveOutreach(); await saveRelationships();
+      alert("Restored. Reloading the page now.");
+      location.reload();
+    }catch(err){
+      alert("Couldn't read that file as a valid backup. Nothing was changed.");
+    }
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById("reconnectBtn").addEventListener("click",()=>{
+  document.getElementById("setupOverlay").classList.add("active");
+});
+document.getElementById("setupCloseBtn").addEventListener("click",()=>{
+  if(!getEndpoint()) return; // must connect before this can be dismissed
+  document.getElementById("setupOverlay").classList.remove("active");
+});
+
+/* ================= INIT ================= */
+window.addEventListener("beforeunload",()=>{
+  if(typeof flushPendingSaves==="function") flushPendingSaves();
+});
+(async function init(){
+  document.getElementById("setupUrlInput").value = getEndpoint();
+  if(!getEndpoint()){
+    document.getElementById("setupOverlay").classList.add("active");
+    return; // wait for the user to connect before loading any data
+  }
+  await loadAll();
+  currentWeekKey = fmtDate(mondayOf(new Date()));
+  renderPulse();
+  renderAccounts();
+})();
+</script>
+</body>
+</html>
